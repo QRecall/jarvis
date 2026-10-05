@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JARVIS</title>
+<meta name="apple-mobile-web-app-title" content="JARVIS">
+<meta name="theme-color" content="#0A1116">
+<meta name="robots" content="noindex,nofollow">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
+<script>
+var DEST="https://claude.ai/artifact/CoG3SKcagCbEdt9kgTp54K";
+var setup=/[?&#]instalar/.test(location.search+location.hash);
+if(!setup){location.replace(DEST)}
+else{try{history.replaceState(null,"",location.pathname)}catch(e){}}
+</script>
+<style>
+html,body{margin:0;height:100%;background:#0A1116;color:#DCEBF0;font:16px -apple-system,system-ui,sans-serif}
+main{min-height:100%;display:grid;place-content:center;justify-items:center;gap:18px;padding:24px 16px;text-align:center;box-sizing:border-box}
+.core{width:120px;height:120px;border-radius:50%;border:5px solid #48D6E8;box-shadow:0 0 30px rgba(72,214,232,.6),inset 0 0 22px rgba(72,214,232,.4);position:relative}
+.core::after{content:"";position:absolute;inset:26px;border-radius:50%;border:3px dashed #48D6E8;animation:s 12s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+h1{margin:0;letter-spacing:.3em;font-weight:700}
+ol{text-align:left;max-width:30ch;line-height:1.6;color:#9DB4BD;margin:0;padding-left:1.2em}
+a{color:#48D6E8}
+</style></head>
+<body><main id="m" hidden>
+<div class="core"></div><h1>JARVIS</h1>
+<ol><li>Pulsa <b>Compartir</b> (el cuadrado con la flecha).</li><li>Elige <b>Añadir a pantalla de inicio</b>.</li><li>Pon el nombre que quieras y pulsa <b>Añadir</b>.</li></ol>
+<a href="https://claude.ai/artifact/CoG3SKcagCbEdt9kgTp54K">Abrir JARVIS ahora</a>
+</main>
+<script>if(setup)document.getElementById("m").hidden=false</script>
+</body></html>
