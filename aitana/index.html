@@ -156,11 +156,6 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--salmon);outline
     <p class="cv-hi" id="cvHi">Hola, Aitana</p>
     <h1 class="cv-t">Dieta Aitana</h1>
     <p class="cv-sub">Salud, energía, agua y piel</p>
-    <div class="cv-stats">
-      <div><b id="cvM">0/5</b><span>comidas</span></div>
-      <div><b id="cvW">0/8</b><span>vasos</span></div>
-      <div><b id="cvR">0/12</b><span>raciones</span></div>
-    </div>
     <button class="cv-go" id="cvGo">Entrar</button>
     <p class="cv-tip" id="cvTip"></p>
   </div>
@@ -174,24 +169,25 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--salmon);outline
   <!-- HOY -->
   <section class="view" id="v-hoy">
     <div class="card">
-      <div class="hdr"><h2>Hoy</h2><span class="muted" id="score">0 de 5 comidas</span></div>
-      <div class="prog" aria-hidden="true"><i id="bar" style="width:0%"></i></div>
-      <div id="meals"></div>
-    </div>
-    <div class="card">
       <div class="hdr"><h2>Agua</h2><span class="muted" id="wtxt">0 de 8 vasos</span></div>
       <div class="water" id="water" role="group" aria-label="Vasos de agua"></div>
       <p class="muted">Toca un vaso cada vez que te bebas uno. Ocho vasos son unos 2 litros: lleva una botella encima y rellénala dos veces.</p>
     </div>
-    <div class="card">
-      <div class="hdr"><h2>Raciones del día</h2><span class="muted" id="rtxt"></span></div>
+    <details class="card opt" id="optBox">
+      <summary class="addsum">Llevar la cuenta (opcional)</summary>
+      <p class="muted">Solo si te apetece. No pasa nada por no marcarlo todo: sirve de recordatorio, no de examen.</p>
+      <div class="hdr"><h2>Comidas de hoy</h2><span class="muted" id="score"></span></div>
+      <div id="meals"></div>
+      <div class="hdr" style="margin-top:6px"><h2>Raciones del día</h2><span class="muted" id="rtxt"></span></div>
       <p class="muted">Cumpliendo esta lista llegas a la proteína, las vitaminas y los minerales que necesitas. Toca cada una cuando la tengas.</p>
       <div id="rations"></div>
-    </div>
-    <div class="card">
-      <div class="hdr"><h2>Esta semana</h2><span class="muted">se reinicia el lunes</span></div>
+      <div class="hdr" style="margin-top:6px"><h2>Esta semana</h2><span class="muted">se reinicia el lunes</span></div>
       <p class="muted">Hay cosas que basta con comer unas veces por semana. Toca + cada vez.</p>
       <div id="weekly"></div>
+    </details>
+    <div class="card">
+      <h2>Ideas para hoy</h2>
+      <p class="muted">Para el almuerzo, una tostada (jamón y tomate, huevo y aguacate…). Para comer y cenar, el plato lleno. Y una fruta con vitamina C, como tu kiwi.</p>
     </div>
     <div class="tip" id="tipday"></div>
   </section>
@@ -234,7 +230,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--salmon);outline
       <p class="muted">No es comer más de golpe: es <b>no pasar muchas horas sin comer</b>. Con tres comidas y dos tentempiés llegas fácil sin sentirte llena.</p>
       <ul class="why">
         <li><b>Desayuno:</b> tu café con leche y kiwi, más una tostada o un yogur.</li>
-        <li><b>Media mañana:</b> fruta + un puñado de frutos secos, o un yogur.</li>
+        <li><b>Almuerzo:</b> una tostada, o fruta + un puñado de frutos secos, o un yogur.</li>
         <li><b>Comida:</b> el plato completo.</li>
         <li><b>Merienda:</b> yogur griego con fruta, un bocadillo pequeño o el batido.</li>
         <li><b>Cena:</b> el plato completo, aunque sea rápido.</li>
@@ -246,7 +242,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--salmon);outline
   <section class="view" id="v-recetas" hidden>
     <div class="card">
       <h2>Recetas</h2>
-      <p class="muted">Todas de Mercadona, en 25 minutos o menos y sin báscula. Con + y − eliges cuántas veces la harás esta semana y se suma a la compra.</p>
+      <p class="muted">Todas de Mercadona, casi todas en menos de 25 minutos y sin báscula. Con + y − eliges cuántas veces la harás esta semana y se suma a la compra.</p>
       <div class="filters" id="filters"></div>
     </div>
     <div id="recipes" class="view"></div>
@@ -290,11 +286,9 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--salmon);outline
     </div>
     <div class="card">
       <h2>Lo que cubre cada ración</h2>
-      <p class="muted">Como referencia, lo que una mujer de tu edad necesita al día y de dónde sale (valores de referencia de la EFSA, la agencia europea de seguridad alimentaria).</p>
+      <p class="muted">Lo que una mujer de tu edad necesita al día y de dónde sale. Fibra, hierro, calcio, vitamina C y omega-3: valores de referencia de la EFSA (agencia europea de seguridad alimentaria); agua: referencia orientativa.</p>
       <div class="chartwrap" style="overflow-x:auto"><table class="ref">
         <tr><th>Qué</th><th>Cuánto al día</th><th>De dónde</th></tr>
-        <tr><td>Proteína</td><td>unos 80-90 g</td><td>Una palma en desayuno, comida y cena + lácteos</td></tr>
-        <tr><td>Energía</td><td>unas 1.900 kcal</td><td>5 comidas con el plato lleno. No hace falta contarlas</td></tr>
         <tr><td>Fibra</td><td>25 g</td><td>Fruta, verdura, legumbres, pan integral</td></tr>
         <tr><td>Agua</td><td>unos 2 L</td><td>8 vasos (la comida aporta el resto)</td></tr>
         <tr><td>Hierro</td><td>16 mg</td><td>Legumbres, huevos, carne, pescado; con fruta de vitamina C se absorbe mejor</td></tr>
@@ -302,7 +296,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--salmon);outline
         <tr><td>Vitamina C</td><td>95 mg</td><td>Un kiwi o una naranja ya casi lo cubren</td></tr>
         <tr><td>Omega-3 (EPA+DHA)</td><td>250 mg de media</td><td>Pescado azul 2 veces por semana (salmón)</td></tr>
       </table></div>
-      <p class="muted">Las kcal y la proteína son una estimación para tu altura, peso y actividad, con un pequeño extra para ganar músculo.</p>
+      <p class="muted"><b>Aparte, y no es dato de la EFSA:</b> como orientación, unos 80-90 g de proteína al día (una palma en desayuno, comida y cena, más los lácteos). No hace falta contar nada: con el plato lleno en 5 comidas se llega.</p>
     </div>
     <div class="card">
       <h2>Para la piel</h2>
@@ -320,7 +314,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--salmon);outline
     <div class="card">
       <h2>Por qué así</h2>
       <ul class="why">
-        <li><b>El objetivo es ganar algo de músculo y energía, no perder peso.</b> Para eso hace falta comer suficiente: si comes poco, el cuerpo no tiene con qué construir músculo y te cansas antes.</li>
+        <li><b>Comer suficiente</b> es la base de todo: de la energía, de la piel y del pelo. Si comes poco, el cuerpo va justo y te cansas antes.</li>
         <li><b>Proteína en cada comida</b> (una palma). Es la que repara y construye el músculo después del gym.</li>
         <li><b>Hidratos sin miedo.</b> Patata, arroz, pasta y pan son la gasolina del día y del entreno.</li>
         <li><b>Agua.</b> Beber poco da cansancio y dolor de cabeza aunque comas bien. Ocho vasos al día como referencia; más si hace calor o entrenas.</li>
@@ -328,9 +322,9 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--salmon);outline
       </ul>
     </div>
     <div class="card">
-      <h2>Para el músculo, el gym también</h2>
+      <h2>Si te apetece entrenar</h2>
       <ul class="why">
-        <li><b>2-3 días de fuerza a la semana</b>, de 45 minutos, con ejercicios básicos: sentadilla, peso muerto rumano, hip thrust, remo, press y dominadas asistidas.</li>
+        <li><b>2 días de fuerza a la semana</b> ya se notan en energía y en tono: sentadilla, hip thrust, remo y press, con el peso que te resulte cómodo.</li>
         <li><b>Que cueste:</b> las últimas 2-3 repeticiones de cada serie tienen que ser difíciles. Cuando ya no lo sean, sube un poco el peso.</li>
         <li>Después del gym, una comida con proteína (o el batido de la merienda).</li>
       </ul>
@@ -381,7 +375,7 @@ const TIPS=["Lleva siempre algo en la mochila: un plátano y un puñado de fruto
  "Después del gym, que la siguiente comida lleve proteína."];
 function renderHoy(){const t=day();
   $("#meals").innerHTML=MEALS.map(([k,n,h])=>`<div class="meal${t.m[k]?" done":""}"><input type="checkbox" id="m-${k}" data-m="${k}"${t.m[k]?" checked":""}><label for="m-${k}"><b>${n}</b><small>${h}</small></label></div>`).join("");
-  const n=MEALS.filter(([k])=>t.m[k]).length;$("#score").textContent=n+" de 5 comidas";$("#bar").style.width=(n/5*100)+"%";
+  const n=MEALS.filter(([k])=>t.m[k]).length;$("#score").textContent=n+" de 5";
   $("#water").innerHTML=Array.from({length:8},(_,i)=>`<button class="glass${i<t.w?" on":""}" data-g="${i}" aria-label="Vaso ${i+1}${i<t.w?", bebido":""}"></button>`).join("");
   $("#wtxt").textContent=t.w+" de 8 vasos";
   t.r=t.r||{};let got=0,tot=0;
@@ -413,18 +407,18 @@ const R=[
   pasos:["Cuece los huevos 10 min (puedes dejar varios cocidos en la nevera para 3-4 días).","Tuesta el pan y chafa el aguacate encima con sal, pimienta y unas gotas de limón.","Huevo en rodajas y tomate. Un hilo de aceite."],
   nota:"Proteína, grasas buenas y vitamina E: buena para la piel."},
  {id:"tosta_pollo",n:"Tostada de pollo en lonchas y queso fresco",t:["almuerzo","desayuno","rápida"],min:5,
-  ing:[["Pan (barra, integral o de semillas)",2,"rebanadas","Panadería"],["Pechuga de pollo en lonchas 99 %",4,"lonchas","Charcutería"],["Queso fresco desnatado (tipo Burgos) o queso batido 0 %",2,"lonchas o cucharadas","Lácteos"],["Tomate",0.5,"tomate","Frutería"],["Aceite de oliva","","","Despensa"],["Orégano","","","Despensa"]],
+  ing:[["Pan (barra, integral o de semillas)",2,"rebanadas","Panadería"],["Pechuga de pollo en lonchas 99 %",4,"lonchas","Charcutería"],["Queso fresco (tipo Burgos) o queso batido natural",2,"lonchas o cucharadas","Lácteos"],["Tomate",0.5,"tomate","Frutería"],["Aceite de oliva","","","Despensa"],["Orégano","","","Despensa"]],
   pasos:["Tuesta el pan y ponle un hilo de aceite.","Unta el queso batido o pon el queso fresco en lonchas.","Pollo en lonchas, tomate en rodajas y orégano."],
-  nota:"El queso puede ser light, pero no le quites el aceite: es lo que le da energía a la tostada."},
+  nota:"Con su chorrito de aceite: es lo que le da energía a la tostada."},
  {id:"tosta_queso",n:"Tostada de tomate, queso fresco y pavo",t:["almuerzo","desayuno","rápida"],min:5,
-  ing:[["Pan (barra, integral o de semillas)",2,"rebanadas","Panadería"],["Tomate triturado o rallado",2,"cucharadas","Frutería"],["Queso fresco desnatado (tipo Burgos)",2,"lonchas","Lácteos"],["Pechuga de pavo en lonchas",3,"lonchas","Charcutería"],["Aceite de oliva","","","Despensa"]],
+  ing:[["Pan (barra, integral o de semillas)",2,"rebanadas","Panadería"],["Tomate triturado o rallado",2,"cucharadas","Frutería"],["Queso fresco (tipo Burgos)",2,"lonchas","Lácteos"],["Pechuga de pavo en lonchas",3,"lonchas","Charcutería"],["Aceite de oliva","","","Despensa"]],
   pasos:["Tuesta el pan y úntale el tomate con sal y aceite.","Queso fresco y pavo encima.","Si quieres variar: cambia el pavo por jamón serrano o por pollo en lonchas."]},
  {id:"pasta_pollo",n:"Pasta con pollo y verduras",t:["comida"],min:20,
   ing:[["Pasta (macarrones o espirales)",1,"puño y medio","Despensa"],["Pechuga de pollo",1,"pechuga","Carnicería"],["Calabacín",0.5,"calabacín","Frutería"],["Pimiento",0.5,"pimiento","Frutería"],["Tomate triturado",4,"cucharadas","Despensa"],["Queso rallado",1,"puñadito","Lácteos"],["Aceite de oliva","","","Despensa"]],
   pasos:["Cuece la pasta.","Dora el pollo en dados con aceite y sal; añade calabacín y pimiento en dados 5-6 min.","Añade el tomate y la pasta, mezcla y queso rallado por encima."],
   nota:"Con arroz en vez de pasta sale igual de bien: mismo puño y medio."},
  {id:"boniato_relleno",n:"Boniato relleno de pollo y queso",t:["comida","cena"],min:25,
-  ing:[["Boniato",1,"boniato grande","Frutería"],["Pechuga de pollo",1,"pechuga","Carnicería"],["Queso fresco desnatado o mozzarella light",2,"lonchas","Lácteos"],["Pimentón y comino","","","Despensa"],["Ensalada en bolsa",0.5,"bolsa","Frutería"],["Aceite de oliva","","","Despensa"]],
+  ing:[["Boniato",1,"boniato grande","Frutería"],["Pechuga de pollo",1,"pechuga","Carnicería"],["Queso fresco o mozzarella",2,"lonchas","Lácteos"],["Pimentón y comino","","","Despensa"],["Ensalada en bolsa",0.5,"bolsa","Frutería"],["Aceite de oliva","","","Despensa"]],
   pasos:["Pincha el boniato y hazlo al microondas 8-10 min (o al horno 40 min a 200 °C) hasta que esté blando.","Mientras, dora el pollo desmenuzado o en dados con pimentón, comino y sal.","Abre el boniato, rellénalo con el pollo y el queso y gratina 3-4 min. Con ensalada."]},
  {id:"bandeja",n:"Bandeja al horno: pollo, patata y verduras",t:["comida","cena"],min:35,
   ing:[["Contramuslos o pechuga de pollo",1,"ración","Carnicería"],["Patata (o boniato)",2,"patatas medianas","Frutería"],["Pimiento",0.5,"pimiento","Frutería"],["Cebolla",0.5,"cebolla","Frutería"],["Brócoli",0.5,"brócoli","Frutería"],["Aceite de oliva","","","Despensa"],["Especias (pimentón, ajo, romero)","","","Despensa"]],
@@ -438,7 +432,7 @@ const R=[
   ing:[["Pechuga de pollo en filetes",1,"pechuga","Carnicería"],["Arroz (vasito de vaso de agua)",0.5,"vaso","Despensa"],["Verduras para saltear (bolsa)",0.5,"bolsa","Congelados"],["Ajo",1,"diente","Frutería"],["Aceite de oliva","","","Despensa"]],
   pasos:["Cuece el arroz (o usa un vasito de arroz ya cocido para microondas).","Dora el pollo en tiras con ajo y aceite, 6-8 min.","Saltea las verduras 5 min y mézclalo todo con un poco de sal y pimentón."]},
  {id:"pasta_salmon",n:"Pasta con salmón y espinacas",t:["comida","rápida","favorita"],min:15,fav:true,
-  ing:[["Pasta (macarrones o espirales)",1,"puño y medio","Despensa"],["Lomo de salmón",1,"lomo","Pescadería"],["Espinacas frescas",1,"puñado grande","Frutería"],["Queso fresco batido o nata ligera",3,"cucharadas","Lácteos"],["Ajo",1,"diente","Frutería"],["Aceite de oliva","","","Despensa"]],
+  ing:[["Pasta (macarrones o espirales)",1,"puño y medio","Despensa"],["Lomo de salmón",1,"lomo","Pescadería"],["Espinacas frescas",1,"puñado grande","Frutería"],["Queso fresco batido natural o nata para cocinar",3,"cucharadas","Lácteos"],["Ajo",1,"diente","Frutería"],["Aceite de oliva","","","Despensa"]],
   pasos:["Cuece la pasta.","En una sartén con aceite, dora el ajo y el salmón en dados 4-5 min; añade las espinacas hasta que bajen.","Fuera del fuego, mezcla con la pasta y el queso batido. Sal, pimienta y limón."],
   nota:"Omega-3, proteína y verdura en un solo plato: de las mejores para la piel."},
  {id:"boniato",n:"Boniato asado con huevos y espinacas",t:["cena","comida"],min:25,
@@ -530,10 +524,9 @@ $("#addForm").addEventListener("submit",e=>{e.preventDefault();const n=$("#fN").
   const r={id:"mine_"+Date.now(),n,t:t.length?t:["comida"],min:Math.max(1,parseInt($("#fM").value)||15),ing,pasos:pasos.length?pasos:["—"],nota:$("#fO").value.trim(),mine:true};
   S.mine=(S.mine||[]).concat([r]);S.favs=S.favs||{};S._ft={};save();
   e.target.reset();renderFormTags();filt="mías";renderRecetas();$("#fMsg").textContent="Receta guardada en «Mías».";document.getElementById("recipes").scrollIntoView({behavior:"smooth"})});
+try{if(localStorage.getItem(KEY+"_opt")==="1")$("#optBox").open=true}catch(e){}$("#optBox").addEventListener("toggle",()=>{try{localStorage.setItem(KEY+"_opt",$("#optBox").open?"1":"0")}catch(e){}});
 renderFormTags();renderHoy();renderRecetas();renderShop();
 (function(){const cv=$("#cover");const h=d.getHours();$("#cvHi").textContent=(h<13?"Buenos días":h<21?"Buenas tardes":"Buenas noches")+", Aitana";
-  const t=day();const m=MEALS.filter(([k])=>t.m[k]).length;let rg=0;RATIONS.forEach(([k,,c])=>{rg+=Math.min((t.r||{})[k]||0,c)});
-  $("#cvM").textContent=m+"/5";$("#cvW").textContent=(t.w||0)+"/8";$("#cvR").textContent=rg+"/12";
   $("#cvTip").textContent=TIPS[d.getDate()%TIPS.length];
   let seen=false;try{seen=sessionStorage.getItem(KEY+"_cv")==="1"}catch(e){}
   if(seen){cv.hidden=true}
