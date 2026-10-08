@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0E1116">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fondeo">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<title>Fondeo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{
+  --bg:#0E1116;--card:#161B22;--card2:#1C232D;--line:#2A333F;--ink:#E6EDF3;--ink2:#8B98A8;--ink3:#5F6B7A;
+  --up:#2BD27F;--up-soft:#123526;--down:#FF5D5D;--down-soft:#3A1717;--warn:#F5B83D;--warn-soft:#3A2D10;--acc:#5AA9FF;--acc-soft:#14283F;
+  --disp:"Space Grotesk",system-ui,sans-serif;--body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;padding-top:env(safe-area-inset-top,0px)
+}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{background:var(--bg)}
+body{margin:0;color:var(--ink);font-family:var(--body);font-size:15.5px;line-height:1.5;padding-inline:16px;padding-block:14px calc(92px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:640px;margin-inline:auto;display:grid;gap:14px}
+h1,h2,h3{font-family:var(--disp);margin:0;line-height:1.15;text-wrap:balance}
+h1{font-size:28px}h2{font-size:19px}h3{font-size:15.5px;font-weight:700}
+p{margin:0}.muted{color:var(--ink2);font-size:14px}.small{font-size:12.5px;color:var(--ink3)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:10px;min-width:0}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sp{justify-content:space-between}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpi{background:var(--card2);border-radius:10px;padding:10px;min-width:0}
+.kpi b{display:block;font-family:var(--mono);font-size:19px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi span{font-size:11.5px;color:var(--ink2);text-transform:uppercase;letter-spacing:.04em}
+.up{color:var(--up)}.down{color:var(--down)}.warn{color:var(--warn)}
+input,select,textarea,button{font:inherit;color:inherit}
+input,select,textarea{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px 11px;width:100%;min-width:0;font-size:16px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-offset:1px}
+label{display:grid;gap:4px;font-size:13px;color:var(--ink2);min-width:0}
+button{border:0;border-radius:10px;padding:11px 14px;font-weight:600;cursor:pointer;background:var(--card2);border:1px solid var(--line)}
+button.pri{background:var(--acc);color:#05121F;border-color:var(--acc)}
+button.good{background:var(--up);color:#04140B;border-color:var(--up)}
+button.bad{background:var(--down);color:#1A0505;border-color:var(--down)}
+button.ghost{background:transparent}
+button:disabled{opacity:.45}
+.bar{height:10px;border-radius:6px;background:var(--card2);overflow:hidden;position:relative}
+.bar i{position:absolute;inset:0 auto 0 0;border-radius:6px}
+.status{border-radius:12px;padding:12px 14px;font-weight:600;display:grid;gap:4px}
+.status.ok{background:var(--up-soft);color:var(--up)}
+.status.warn{background:var(--warn-soft);color:var(--warn)}
+.status.stop{background:var(--down-soft);color:var(--down)}
+.status small{font-weight:400;color:var(--ink);opacity:.85;font-size:13.5px}
+.tag{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:999px;background:var(--card2);color:var(--ink2);border:1px solid var(--line)}
+.tag.acc{background:var(--acc-soft);color:var(--acc);border-color:transparent}
+.tag.up{background:var(--up-soft);color:var(--up);border-color:transparent}
+.tag.down{background:var(--down-soft);color:var(--down);border-color:transparent}
+.list{display:grid;gap:6px}
+.li{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--card2);border-radius:10px;padding:9px 11px;min-width:0}
+.li>div{min-width:0}
+.li .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.x{background:transparent;border:0;color:var(--ink3);padding:4px 8px}
+nav{position:fixed;left:0;right:0;bottom:0;background:#0B0E12F2;border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));backdrop-filter:blur(8px);z-index:5}
+nav .in{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;max-width:640px;width:100%}
+nav button{background:transparent;border:0;padding:7px 2px;font-size:11.5px;color:var(--ink3);display:grid;justify-items:center;gap:2px;font-weight:500}
+nav button svg{width:22px;height:22px}
+nav button.on{color:var(--acc)}
+.seg{display:flex;background:var(--card2);border-radius:10px;padding:3px;gap:3px}
+.seg button{flex:1;padding:8px;background:transparent;border:0;border-radius:8px;font-size:14px;color:var(--ink2)}
+.seg button.on{background:var(--acc-soft);color:var(--acc)}
+.chart{width:100%;height:auto;display:block}
+.tip{background:var(--card2);border-left:3px solid var(--acc);border-radius:8px;padding:10px 12px;font-size:14px}
+.tip.w{border-left-color:var(--warn)}.tip.g{border-left-color:var(--up)}.tip.r{border-left-color:var(--down)}
+/* bloqueo */
+#lock{position:fixed;inset:0;background:var(--bg);z-index:20;display:grid;place-items:center;padding:24px}
+#lock .box{max-width:360px;width:100%;display:grid;gap:14px;text-align:center}
+#lock .logo{width:84px;height:84px;margin:0 auto}
+.err{color:var(--down);font-size:13.5px;min-height:1.2em}
+details summary{cursor:pointer;color:var(--ink2);font-size:14px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal div{aspect-ratio:1;border-radius:6px;background:var(--card2);font-size:11px;display:grid;place-items:center;font-family:var(--mono)}
+@media (max-width:420px){.grid3{grid-template-columns:1fr 1fr}.grid3.k3{grid-template-columns:repeat(3,1fr)}.kpi b{font-size:16px}.k3 .kpi span{font-size:10.5px}}
+</style>
+</head>
+<body>
+
+<div id="lock">
+  <div class="box">
+    <svg class="logo" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="#161B22"/><g stroke-linecap="round"><line x1="30" y1="22" x2="30" y2="70" stroke="#FF5D5D" stroke-width="3"/><rect x="23" y="34" width="14" height="24" rx="3" fill="#FF5D5D"/><line x1="50" y1="30" x2="50" y2="78" stroke="#2BD27F" stroke-width="3"/><rect x="43" y="40" width="14" height="28" rx="3" fill="#2BD27F"/><line x1="70" y1="16" x2="70" y2="62" stroke="#2BD27F" stroke-width="3"/><rect x="63" y="24" width="14" height="30" rx="3" fill="#2BD27F"/></g></svg>
+    <h1>Fondeo</h1>
+    <p class="muted" id="lockMsg">Tu diario está cifrado en este móvil. Escribe tu clave.</p>
+    <input id="pw" type="password" autocomplete="current-password" placeholder="Clave">
+    <input id="pw2" type="password" autocomplete="new-password" placeholder="Repite la clave" hidden>
+    <button class="pri" id="pwGo">Abrir</button>
+    <div class="err" id="pwErr"></div>
+    <p class="small" id="lockNote">Si olvidas la clave, no hay forma de recuperar los datos: ni yo ni nadie puede abrirlos.</p>
+  </div>
+</div>
+
+<main class="wrap" id="app" hidden>
+  <header class="row sp">
+    <div><p class="small" id="hdrAcc"></p><h1 id="hdrTitle">Hoy</h1></div>
+    <button class="ghost" id="lockBtn" title="Bloquear" aria-label="Bloquear">🔒</button>
+  </header>
+
+  <!-- HOY -->
+  <section id="v-hoy" class="wrap">
+    <div id="noAcc" class="card" hidden>
+      <h2>Crea tu primera cuenta</h2>
+      <p class="muted">Ve a «Cuentas» y añade la Advanced 50K. Las reglas vienen ya puestas.</p>
+      <button class="pri" data-go="cuentas">Ir a Cuentas</button>
+    </div>
+    <div id="hoyBody">
+      <div id="hStatus" class="status ok"></div>
+      <div class="card">
+        <div class="row sp"><h2>Sesión de hoy</h2><span class="tag" id="hDate"></span></div>
+        <div class="grid3 k3">
+          <div class="kpi"><span>P&amp;L del día</span><b id="hPnl" class="num">0</b></div>
+          <div class="kpi"><span>Máximo del día</span><b id="hPeak" class="num">0</b></div>
+          <div class="kpi"><span>Operaciones</span><b id="hN" class="num">0</b></div>
+        </div>
+        <div>
+          <div class="row sp small"><span>Hasta tu tope de pérdida</span><span id="hLossTxt" class="num"></span></div>
+          <div class="bar"><i id="hLossBar" style="background:var(--down)"></i></div>
+        </div>
+        <div id="hCapWrap">
+          <div class="row sp small"><span id="hCapLbl">Hasta tu tope de ganancia</span><span id="hCapTxt" class="num"></span></div>
+          <div class="bar"><i id="hCapBar" style="background:var(--up)"></i></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Apuntar operación</h3>
+        <div class="grid2">
+          <label>Resultado ($)<input id="tPnl" type="number" inputmode="decimal" step="any" placeholder="+250 o -120"></label>
+          <label>Contratos<input id="tQty" type="number" inputmode="numeric" min="1" step="1" placeholder="1"></label>
+          <label>Hora<input id="tTime" type="time"></label>
+          <label>Dirección<select id="tSide"><option value="L">Largo</option><option value="S">Corto</option></select></label>
+          <label>Setup<input id="tSetup" list="setups" placeholder="p. ej. ruptura apertura"></label>
+          <label>Cómo estabas<select id="tMood"><option value="">—</option><option value="tranquilo">Tranquilo</option><option value="ansioso">Ansioso</option><option value="revancha">Con ganas de recuperar</option><option value="euforico">Eufórico</option><option value="cansado">Cansado</option></select></label>
+        </div>
+        <label>Nota<input id="tNote" placeholder="qué viste, qué fallaste"></label>
+        <label class="row" style="display:flex;gap:8px;color:var(--ink)"><input id="tPlan" type="checkbox" style="width:auto"> Cumplí mi plan en esta operación</label>
+        <button class="pri" id="tAdd">Apuntar</button>
+        <datalist id="setups"></datalist>
+      </div>
+
+      <div class="card">
+        <div class="row sp"><h3>Operaciones de hoy</h3><span class="small">toca ✕ dos veces para borrar</span></div>
+        <div class="list" id="hList"></div>
+        <label>Nota del día<textarea id="dNote" rows="2" placeholder="cómo fue el día, qué repetir, qué no"></textarea></label>
+      </div>
+
+      <div class="card" id="acctCard">
+        <div class="row sp"><h2 id="aPhase">Prueba</h2><span class="tag acc" id="aPlan"></span></div>
+        <div class="grid2">
+          <div class="kpi"><span>Saldo</span><b id="aBal" class="num"></b></div>
+          <div class="kpi"><span>Margen hasta la línea</span><b id="aRoom" class="num"></b></div>
+        </div>
+        <p class="small" id="aFloorTxt"></p>
+        <div id="evalBox">
+          <div class="row sp small"><span>Objetivo</span><span id="aTgtTxt" class="num"></span></div>
+          <div class="bar"><i id="aTgtBar" style="background:var(--acc)"></i></div>
+          <p class="small" id="aCons"></p>
+        </div>
+        <div id="fundBox">
+          <p class="small" id="aPay"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIARIO -->
+  <section id="v-diario" class="wrap" hidden>
+    <div class="card">
+      <div class="row sp"><h2>Curva de la cuenta</h2><span class="small" id="eqInfo"></span></div>
+      <svg id="eq" class="chart" viewBox="0 0 600 220" role="img" aria-label="Saldo a cierre de cada día y línea de pérdida máxima"></svg>
+      <p class="small">Línea azul: saldo a cierre de día. Línea roja discontinua: tu línea de pérdida máxima.</p>
+    </div>
+    <div class="card">
+      <h2>Días</h2>
+      <div class="list" id="dList"></div>
+    </div>
+    <div class="card">
+      <h3>Apuntar un día pasado</h3>
+      <div class="grid2">
+        <label>Fecha<input id="pDate" type="date"></label>
+        <label>P&amp;L del día ($)<input id="pPnl" type="number" inputmode="decimal" step="any"></label>
+      </div>
+      <button id="pAdd">Añadir como una operación de resumen</button>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section id="v-stats" class="wrap" hidden>
+    <div class="seg" id="stScope"><button data-s="acc" class="on">Esta cuenta</button><button data-s="all">Todas</button></div>
+    <div class="card">
+      <h2>Números</h2>
+      <div class="grid3" id="stK"></div>
+    </div>
+    <div class="card">
+      <h2>Consejos según tus datos</h2>
+      <div class="list" id="stTips"></div>
+    </div>
+    <div class="card">
+      <h3>Por hora de entrada</h3>
+      <svg id="stHour" class="chart" viewBox="0 0 600 180" role="img" aria-label="Resultado por hora"></svg>
+    </div>
+    <div class="card">
+      <h3>Por setup</h3>
+      <div class="list" id="stSetup"></div>
+    </div>
+  </section>
+
+  <!-- CUENTAS -->
+  <section id="v-cuentas" class="wrap" hidden>
+    <div class="card">
+      <h2>Tus cuentas</h2>
+      <div class="list" id="accList"></div>
+    </div>
+    <div class="card">
+      <h3>Nueva cuenta</h3>
+      <div class="grid2">
+        <label>Nombre<input id="nName" placeholder="Advanced 50K #1"></label>
+        <label>Plantilla<select id="nTpl">
+          <option value="adv50">Advanced 50K (prueba)</option>
+          <option value="adv50f">Advanced 50K (financiada)</option>
+          <option value="zero50">Zero 50K (prueba)</option>
+          <option value="custom">Personalizada</option>
+        </select></label>
+      </div>
+      <button class="pri" id="nAdd">Crear y usarla</button>
+      <p class="small">Plantillas con las reglas oficiales de Alpha Futures leídas el 8-10-2026 y tus reglas personales. Puedes cambiarlas en «Reglas».</p>
+    </div>
+    <div class="card" id="rulesCard">
+      <h2>Reglas de la cuenta activa</h2>
+      <div class="grid2" id="rulesForm"></div>
+      <button id="rSave">Guardar reglas</button>
+      <div class="row">
+        <button id="toFunded" class="good">Aprobada → crear la financiada</button>
+        <button id="failAcc" class="bad">Suspendida</button>
+      </div>
+      <div id="payBox">
+        <h3>Retiros</h3>
+        <div class="grid2"><label>Fecha<input id="wDate" type="date"></label><label>Cantidad pedida ($)<input id="wAmt" type="number" inputmode="decimal"></label></div>
+        <button id="wAdd">Apuntar retiro</button>
+        <div class="list" id="wList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AJUSTES -->
+  <section id="v-ajustes" class="wrap" hidden>
+    <div class="card">
+      <h2>Días sin operar</h2>
+      <p class="muted">Si hoy cae dentro, la pantalla de Hoy te lo dice en rojo.</p>
+      <div class="list" id="blkList"></div>
+      <div class="grid2"><label>Desde<input id="bFrom" type="date"></label><label>Hasta<input id="bTo" type="date"></label></div>
+      <label>Motivo<input id="bWhy" placeholder="parciales"></label>
+      <button id="bAdd">Añadir</button>
+    </div>
+    <div class="card">
+      <h2>Reinicios</h2>
+      <p class="muted" id="rsTxt"></p>
+      <label>Máximo de suspensos o reinicios al mes<input id="rsMax" type="number" min="0" step="1"></label>
+      <button id="rsSave">Guardar</button>
+    </div>
+    <div class="card">
+      <h2>Copia de seguridad</h2>
+      <p class="muted">Los datos viven solo en este móvil. Copia este código (sigue cifrado con tu clave) y guárdalo donde quieras. Para pasarlo a otro dispositivo, pégalo allí y abre con la misma clave.</p>
+      <button id="bkOut">Copiar código cifrado</button>
+      <textarea id="bkTxt" rows="3" placeholder="Pega aquí un código para restaurar"></textarea>
+      <button id="bkIn">Restaurar desde el código</button>
+      <div class="small" id="bkMsg"></div>
+    </div>
+    <div class="card">
+      <h2>Clave</h2>
+      <label>Clave nueva<input id="cp1" type="password" autocomplete="new-password"></label>
+      <label>Repite<input id="cp2" type="password" autocomplete="new-password"></label>
+      <button id="cpGo">Cambiar clave</button>
+      <div class="small" id="cpMsg"></div>
+      <p class="small">Se bloquea sola tras 5 minutos sin tocarla o si sales de la app más de 2 minutos.</p>
+    </div>
+    <p class="small">Fondeo no es asesoramiento financiero. Las reglas de la prop firm pueden cambiar: compruébalas en su web.</p>
+  </section>
+</main>
+
+<nav id="nav" hidden><div class="in">
+  <button data-go="hoy" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>Hoy</button>
+  <button data-go="diario"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Diario</button>
+  <button data-go="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>Números</button>
+  <button data-go="cuentas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>Cuentas</button>
+  <button data-go="ajustes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Ajustes</button>
+</div></nav>
+
+<script>
+"use strict";
+/* ============ cifrado (AES-GCM, clave derivada con PBKDF2-SHA256) ============ */
+const LS="fondeo_v1",IT=600000;
+const enc=new TextEncoder(),dec=new TextDecoder();
+const b64=u=>{let s="";const b=new Uint8Array(u);for(let i=0;i<b.length;i+=0x8000)s+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));return btoa(s)};
+const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function derive(pw,salt,it){const k=await crypto.subtle.importKey("raw",enc.encode(pw),"PBKDF2",false,["deriveKey"]);return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:it,hash:"SHA-256"},k,{name:"AES-GCM",length:256},false,["encrypt","decrypt"])}
+let KEY=null,SALT=null,D=null;
+function lsGet(){try{return JSON.parse(localStorage.getItem(LS)||"null")}catch(e){return null}}
+function lsSet(v){try{localStorage.setItem(LS,JSON.stringify(v));return true}catch(e){return false}}
+async function seal(){if(!KEY||!D)return;const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},KEY,enc.encode(JSON.stringify(D)));lsSet({v:1,it:IT,salt:b64(SALT),iv:b64(iv),ct:b64(ct)})}
+async function openBlob(blob,pw){const salt=unb64(blob.salt),k=await derive(pw,salt,blob.it||IT);const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:unb64(blob.iv)},k,unb64(blob.ct));return {k,salt,data:JSON.parse(dec.decode(pt))}}
+let saveT=null;function save(){clearTimeout(saveT);saveT=setTimeout(()=>seal().catch(()=>{}),250)}
+
+/* ============ utilidades ============ */
+const $=id=>document.getElementById(id);
+const pad=n=>String(n).padStart(2,"0");
+const ymd=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const today=()=>ymd(new Date());
+const money=(v,sign)=>{v=Math.round(+v||0);const s=Math.abs(v).toLocaleString("es-ES");return (sign?(v>0?"+":v<0?"−":""):(v<0?"−":""))+s+" $"};
+const cls=v=>v>0?"up":v<0?"down":"";
+const esc=s=>{const d=document.createElement("div");d.textContent=s==null?"":String(s);return d.innerHTML};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const fdate=s=>{const d=new Date(s+"T00:00:00");return d.toLocaleDateString("es-ES",{weekday:"short",day:"numeric",month:"short"})};
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+
+/* ============ plantillas (Alpha Futures, leídas el 8-10-2026) ============ */
+const TPL={
+  adv50:{plan:"Advanced 50K",phase:"prueba",start:50000,dd:1750,target:4000,cons:0.40,dll:0,payCap:15000,payMin:1000,
+    my:{loss:500,cap:1500,risk:250,consec:3,give:0}},
+  adv50f:{plan:"Advanced 50K",phase:"financiada",start:50000,dd:1750,target:0,cons:0,dll:0,payCap:15000,payMin:1000,
+    my:{loss:700,cap:0,risk:250,consec:3,give:0.5}},
+  zero50:{plan:"Zero 50K",phase:"prueba",start:50000,dd:2000,target:3000,cons:0,dll:1000,payCap:1500,payMin:200,
+    my:{loss:500,cap:1500,risk:200,consec:3,give:0}},
+  custom:{plan:"Personalizada",phase:"prueba",start:50000,dd:2000,target:3000,cons:0,dll:0,payCap:0,payMin:0,
+    my:{loss:500,cap:0,risk:200,consec:3,give:0}}
+};
+function newData(){return {v:1,accounts:[],active:null,blocked:[{from:"2026-10-26",to:"2026-11-10",why:"Parciales (Trauma, Micro, Gine, Farma)"}],resetsMax:1}}
+function mkAcc(tpl,name){const t=JSON.parse(JSON.stringify(TPL[tpl]));return Object.assign(t,{id:uid(),name:name||t.plan+(t.phase==="financiada"?" · financiada":""),created:today(),status:"activa",days:{},payouts:[]})}
+const acc=()=>D&&D.accounts.find(a=>a.id===D.active)||null;
+
+/* ============ cálculos de la cuenta ============ */
+function dayPnl(day){return (day&&day.trades||[]).reduce((s,t)=>s+(+t.pnl||0),0)}
+function calc(a){
+  const dates=Object.keys(a.days).sort();const pays=(a.payouts||[]).slice().sort((x,y)=>x.date<y.date?-1:1);
+  let bal=a.start,maxEOD=a.start,profit=0,best=0,series=[];
+  dates.forEach(d=>{const p=dayPnl(a.days[d]);const paid=pays.filter(x=>x.date===d).reduce((s,x)=>s+(+x.amount||0),0);
+    bal+=p-paid;profit+=p;if(p>best)best=p;
+    if(d<today()){maxEOD=Math.max(maxEOD,bal)}
+    series.push({d,bal,floor:Math.min(maxEOD-a.dd,a.start),p})});
+  pays.filter(x=>!a.days[x.date]).forEach(x=>{bal-=+x.amount||0});
+  const floor=Math.min(maxEOD-a.dd,a.start);
+  const tProfit=bal-a.start; // beneficio actual en la cuenta (tras retiros)
+  // consistencia (solo prueba): mejor día / beneficio total
+  const consPct=profit>0?best/profit:0;
+  const effTarget=a.cons>0?Math.max(a.target,best/a.cons):a.target;
+  // retiros: días ganadores (>=200) desde el último retiro
+  const lastPay=pays.length?pays[pays.length-1].date:"";
+  const winDays=dates.filter(d=>d>lastPay&&dayPnl(a.days[d])>=200).length;
+  const canPay=Math.max(0,Math.min(a.payCap||Infinity,0.5*tProfit));
+  return {bal,floor,room:bal-floor,maxEOD,profit,best,consPct,effTarget,winDays,canPay,lastPay,series,tProfit,dates}
+}
+function dayState(a,day){
+  const tr=(day&&day.trades)||[];let run=0,peak=0,consec=0,maxConsec=0;
+  tr.forEach(t=>{run+=+t.pnl||0;if(run>peak)peak=run;if((+t.pnl||0)<0){consec++;maxConsec=Math.max(maxConsec,consec)}else consec=0});
+  return {pnl:run,peak,consec,n:tr.length}
+}
+function blockedToday(){const t=today();return (D.blocked||[]).find(b=>b.from<=t&&t<=b.to)||null}
+function resetsThisMonth(){const m=today().slice(0,7);return D.accounts.filter(a=>a.status==="suspendida"&&(a.endDate||"").slice(0,7)===m).length}
+
+/* ============ semáforo de la sesión ============ */
+function verdict(a,c,s){
+  const out={lvl:"ok",title:"Puedes operar",lines:[]};
+  const set=(l,t)=>{const r={ok:0,warn:1,stop:2};if(r[l]>r[out.lvl]){out.lvl=l;out.title=t}else if(r[l]===r[out.lvl]&&l!=="ok"&&out.title==="Puedes operar")out.title=t};
+  const b=blockedToday();
+  if(b){set("stop","Hoy no se opera");out.lines.push("Estás en «"+b.why+"» ("+fdate(b.from)+" – "+fdate(b.to)+"). Medicina primero.")}
+  if(a.status!=="activa"){set("stop","Cuenta cerrada");out.lines.push("Esta cuenta está marcada como "+a.status+". Elige otra en Cuentas.");return out}
+  const my=a.my;
+  // pérdida diaria
+  if(my.loss>0){if(s.pnl<=-my.loss){set("stop","Tope de pérdida alcanzado");out.lines.push("Vas "+money(s.pnl,1)+". Tu tope es −"+my.loss+" $. Se acabó el día.")}
+    else if(s.pnl<=-0.7*my.loss){set("warn","Cerca del tope de pérdida");out.lines.push("Te quedan "+money(my.loss+s.pnl)+" hasta tu tope diario. Baja tamaño o para.")}}
+  if(a.dll>0&&s.pnl<=-a.dll){set("stop","Límite diario de la prop firm");out.lines.push("Has tocado el límite diario de la cuenta ("+a.dll+" $).")}
+  // pérdidas seguidas
+  if(my.consec>0&&s.consec>=my.consec){set("stop",my.consec+" pérdidas seguidas");out.lines.push("Regla: con "+my.consec+" pérdidas seguidas se cierra el día.")}
+  else if(my.consec>1&&s.consec===my.consec-1){set("warn","Una pérdida más y paras");out.lines.push("Llevas "+s.consec+" pérdidas seguidas.")}
+  // margen hasta la línea
+  if(c.room<=Math.max(my.risk*2,250)){set(c.room<=my.risk?"stop":"warn","Muy cerca de la línea de pérdida máxima");out.lines.push("Solo "+money(c.room)+" hasta perder la cuenta. Riesgo mínimo o nada.")}
+  if(a.phase==="prueba"){
+    if(my.cap>0&&s.pnl>=my.cap){set("stop","Tope de ganancia del día");out.lines.push("Vas "+money(s.pnl,1)+". En la prueba, por la consistencia, más ganancia hoy no te ayuda. Cierra.")}
+    else if(my.cap>0&&s.pnl>=0.8*my.cap){set("warn","Cerca del tope de ganancia");out.lines.push("Te quedan "+money(my.cap-s.pnl)+" hasta tu tope de hoy.")}
+    if(s.peak>=300&&s.pnl<=s.peak*0.5){set("warn","Estás devolviendo lo ganado");out.lines.push("Llegaste a "+money(s.peak,1)+" y vas "+money(s.pnl,1)+". En la prueba no uses el margen de la tarde.")}
+  }else{
+    if(my.give>0&&s.peak>=300){const lim=s.peak*(1-my.give);if(s.pnl<=lim){set("stop","Has devuelto la mitad de lo ganado");out.lines.push("Máximo del día "+money(s.peak,1)+". Tu regla: cerrar como muy tarde en "+money(lim,1)+".")}
+      else if(s.pnl<=s.peak*(1-my.give*0.6)){set("warn","Ojo con devolver");out.lines.push("Si bajas de "+money(lim,1)+" se acaba el día.")}}
+    if(c.floor<a.start){out.lines.push("Colchón aún sin hacer: la línea no se fija hasta cerrar un día en "+money(a.start+a.dd)+". Opera como en la prueba.")}
+  }
+  if(out.lvl==="ok"&&!out.lines.length)out.lines.push("Riesgo por operación: hasta "+my.risk+" $. Tope de pérdida: −"+my.loss+" $"+(a.phase==="prueba"&&my.cap?" · tope de ganancia: +"+my.cap+" $":"")+".");
+  return out
+}
+
+/* ============ pintar ============ */
+let VIEW="hoy",STSCOPE="acc";
+function go(v){VIEW=v;document.querySelectorAll("main>section").forEach(s=>s.hidden=s.id!=="v-"+v);document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.go===v));
+  $("hdrTitle").textContent={hoy:"Hoy",diario:"Diario",stats:"Números",cuentas:"Cuentas",ajustes:"Ajustes"}[v];render();window.scrollTo(0,0)}
+function render(){if(!D)return;const a=acc();$("hdrAcc").textContent=a?(a.name.toLowerCase().includes(a.phase)?a.name:a.name+" · "+a.phase):"Sin cuenta";
+  if(VIEW==="hoy")rHoy();if(VIEW==="diario")rDiario();if(VIEW==="stats")rStats();if(VIEW==="cuentas")rCuentas();if(VIEW==="ajustes")rAjustes()}
+
+function rHoy(){const a=acc();$("noAcc").hidden=!!a;$("hoyBody").hidden=!a;if(!a)return;
+  const t=today(),day=a.days[t]||{trades:[]},s=dayState(a,day),c=calc(a);
+  $("hDate").textContent=fdate(t);
+  const pn=$("hPnl");pn.textContent=money(s.pnl,1);pn.className="num "+cls(s.pnl);
+  $("hPeak").textContent=money(s.peak,1);$("hN").textContent=s.n;
+  const L=a.my.loss||1;$("hLossTxt").textContent=money(Math.max(0,L+Math.min(0,s.pnl)))+" de "+L+" $";
+  $("hLossBar").style.width=clamp(-Math.min(0,s.pnl)/L*100,0,100)+"%";
+  const capOn=a.phase==="prueba"&&a.my.cap>0;$("hCapWrap").hidden=!capOn&&!(a.phase==="financiada"&&a.my.give>0);
+  if(capOn){$("hCapLbl").textContent="Hasta tu tope de ganancia";$("hCapTxt").textContent=money(Math.max(0,a.my.cap-s.pnl))+" de "+a.my.cap+" $";$("hCapBar").style.width=clamp(s.pnl/a.my.cap*100,0,100)+"%"}
+  else if(a.my.give>0){const lim=s.peak*(1-a.my.give);$("hCapLbl").textContent="Suelo de hoy (no devolver más del "+Math.round(a.my.give*100)+" %)";$("hCapTxt").textContent=s.peak>=300?money(lim,1):"desde +300 $";$("hCapBar").style.width=s.peak>0?clamp(s.pnl/s.peak*100,0,100)+"%":"0%"}
+  const v=verdict(a,c,s);const st=$("hStatus");st.className="status "+v.lvl;st.innerHTML=esc(v.title)+v.lines.map(l=>"<small>"+esc(l)+"</small>").join("");
+  // lista
+  const L2=$("hList");L2.innerHTML="";if(!day.trades.length)L2.innerHTML='<p class="small">Aún nada hoy.</p>';
+  day.trades.forEach((tr,i)=>{const r=document.createElement("div");r.className="li";
+    r.innerHTML='<div><div class="t"><b class="num '+cls(tr.pnl)+'">'+money(tr.pnl,1)+'</b> · '+esc(tr.time||"")+" · "+(tr.side==="S"?"corto":"largo")+(tr.qty?" · "+tr.qty+" c.":"")+'</div><div class="small t">'+esc([tr.setup,tr.mood,tr.plan?"plan ✓":"fuera de plan",tr.note].filter(Boolean).join(" · "))+'</div></div>';
+    const x=document.createElement("button");x.className="x";x.textContent="✕";x.addEventListener("click",()=>{if(x.dataset.a!=="1"){x.dataset.a="1";x.textContent="¿borrar?";setTimeout(()=>{x.dataset.a="";x.textContent="✕"},2500);return}day.trades.splice(i,1);if(!day.trades.length&&!day.note)delete a.days[t];save();render()});
+    r.append(x);L2.append(r)});
+  if(document.activeElement!==$("dNote"))$("dNote").value=day.note||"";
+  // cuenta
+  $("aPhase").textContent=a.phase==="prueba"?"Prueba":"Financiada";$("aPlan").textContent=a.plan;
+  $("aBal").textContent=money(c.bal);const rm=$("aRoom");rm.textContent=money(c.room);rm.className="num "+(c.room<a.dd*0.4?"down":c.room<a.dd*0.7?"warn":"up");
+  $("aFloorTxt").textContent="Línea de pérdida máxima: "+money(c.floor)+(c.floor>=a.start?" (ya fija en el saldo inicial)":" · sube con cada cierre en máximos hasta "+money(a.start))+".";
+  $("evalBox").hidden=a.phase!=="prueba";$("fundBox").hidden=a.phase!=="financiada";
+  if(a.phase==="prueba"){const tg=c.effTarget;$("aTgtTxt").textContent=money(c.profit)+" de "+money(tg);$("aTgtBar").style.width=clamp(c.profit/tg*100,0,100)+"%";
+    $("aCons").innerHTML=a.cons>0?(c.best>0?"Mejor día: "+money(c.best)+" = "+Math.round(c.consPct*100)+" % del beneficio (máx. "+Math.round(a.cons*100)+" %). "+(tg>a.target?'<span class="warn">Por la consistencia, tu objetivo real sube a '+money(tg)+".</span>":"Objetivo real: "+money(a.target)+"."):"Consistencia: ningún día por encima del "+Math.round(a.cons*100)+" % del beneficio total."):"Esta cuenta no tiene regla de consistencia en la prueba."}
+  else{const ok=c.winDays>=5&&c.canPay>=(a.payMin||0);
+    $("aPay").innerHTML="Días ganadores (≥200 $) desde el último retiro: <b class='num'>"+c.winDays+"/5</b>. "+(ok?'<span class="up">Puedes pedir retiro: hasta '+money(c.canPay)+" (te llegan ~"+money(c.canPay*0.9)+").</span>":c.winDays>=5?"Te faltan beneficios: el mínimo de retiro es "+money(a.payMin)+" y solo puedes sacar el 50 % del beneficio.":"Aún no puedes pedir retiro.")}
+}
+
+function rDiario(){const a=acc();const L=$("dList");L.innerHTML="";if(!a){L.innerHTML='<p class="small">Sin cuenta.</p>';$("eq").innerHTML="";return}
+  const c=calc(a);c.dates.slice().reverse().forEach(d=>{const day=a.days[d],p=dayPnl(day),s=dayState(a,day);const r=document.createElement("div");r.className="li";
+    r.innerHTML='<div><div class="t">'+fdate(d)+' · <b class="num '+cls(p)+'">'+money(p,1)+'</b></div><div class="small t">'+s.n+" op. · máx "+money(s.peak,1)+(day.note?" · "+esc(day.note):"")+'</div></div>';L.append(r)});
+  if(!c.dates.length)L.innerHTML='<p class="small">Cuando apuntes operaciones, aquí verás cada día.</p>';
+  // curva
+  const S=[{d:"inicio",bal:a.start,floor:a.start-a.dd}].concat(c.series);const W=600,H=220,P=34;
+  const vals=S.flatMap(x=>[x.bal,x.floor]).concat(a.phase==="prueba"&&a.target?[a.start+c.effTarget]:[]);const mn=Math.min(...vals),mx=Math.max(...vals),sp=(mx-mn)||1;
+  const X=i=>P+(S.length>1?i*(W-P-10)/(S.length-1):0),Y=v=>H-24-(v-mn)/sp*(H-44);
+  let g='<line x1="'+P+'" y1="'+Y(a.start)+'" x2="'+(W-10)+'" y2="'+Y(a.start)+'" stroke="#2A333F"/>';
+  if(a.phase==="prueba"&&a.target){const ty=Y(a.start+c.effTarget);g+='<line x1="'+P+'" y1="'+ty+'" x2="'+(W-10)+'" y2="'+ty+'" stroke="#2BD27F" stroke-dasharray="3 5" opacity=".7"/><text x="'+(W-12)+'" y="'+(ty-5)+'" text-anchor="end" fill="#2BD27F" font-size="11">objetivo</text>'}
+  g+='<polyline fill="none" stroke="#FF5D5D" stroke-dasharray="6 5" stroke-width="2" points="'+S.map((x,i)=>X(i).toFixed(1)+","+Y(x.floor).toFixed(1)).join(" ")+'"/>';
+  g+='<polyline fill="none" stroke="#5AA9FF" stroke-width="2.5" points="'+S.map((x,i)=>X(i).toFixed(1)+","+Y(x.bal).toFixed(1)).join(" ")+'"/>';
+  S.forEach((x,i)=>{g+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(x.bal).toFixed(1)+'" r="3" fill="#5AA9FF"><title>'+esc(x.d)+": "+money(x.bal)+'</title></circle>'});
+  g+='<text x="4" y="'+(Y(mx)+4)+'" fill="#8B98A8" font-size="11">'+Math.round(mx/1000*10)/10+'k</text><text x="4" y="'+(Y(mn)+4)+'" fill="#8B98A8" font-size="11">'+Math.round(mn/1000*10)/10+'k</text>';
+  $("eq").innerHTML=g;$("eqInfo").textContent=c.dates.length+" días";
+}
+
+/* ============ números y consejos ============ */
+function allTrades(scope){const accs=scope==="all"?D.accounts:[acc()].filter(Boolean);const out=[];
+  accs.forEach(a=>Object.keys(a.days).sort().forEach(d=>{let prevLoss=0;(a.days[d].trades||[]).forEach((t,i)=>{out.push(Object.assign({d,i,afterLoss:prevLoss>0,acc:a.id},t));prevLoss=(+t.pnl||0)<0?prevLoss+1:0})}));return out}
+function agg(tr){const w=tr.filter(t=>t.pnl>0),l=tr.filter(t=>t.pnl<0);const gw=w.reduce((s,t)=>s+t.pnl,0),gl=-l.reduce((s,t)=>s+t.pnl,0);
+  return {n:tr.length,win:tr.length?w.length/tr.length:0,avgW:w.length?gw/w.length:0,avgL:l.length?gl/l.length:0,pf:gl?gw/gl:(gw?Infinity:0),exp:tr.length?(gw-gl)/tr.length:0,net:gw-gl}}
+function rStats(){document.querySelectorAll("#stScope button").forEach(b=>b.classList.toggle("on",b.dataset.s===STSCOPE));
+  const tr=allTrades(STSCOPE),A=agg(tr);
+  const K=[["Operaciones",A.n],["% acierto",Math.round(A.win*100)+" %"],["Neto",money(A.net,1)],["Ganancia media",money(A.avgW)],["Pérdida media",money(-A.avgL)],["Factor beneficio",A.pf===Infinity?"∞":A.pf.toFixed(2)],["Por operación",money(A.exp,1)],["Ganancia/pérdida",A.avgL?(A.avgW/A.avgL).toFixed(2):"—"],["Días operados",new Set(tr.map(t=>t.acc+t.d)).size]];
+  $("stK").innerHTML=K.map(([k,v])=>'<div class="kpi"><span>'+k+'</span><b>'+esc(v)+'</b></div>').join("");
+  // por hora
+  const H={};tr.forEach(t=>{if(!t.time||isNaN(parseInt(t.time,10)))return;const h=parseInt(t.time,10);(H[h]=H[h]||[]).push(t)});
+  const hs=Object.keys(H).map(Number).sort((a,b)=>a-b);const W=600,HH=180,P=30;let g="";
+  if(!hs.length)g='<text x="300" y="90" text-anchor="middle" fill="#8B98A8" font-size="13">Sin horas apuntadas todavía</text>';
+  else{const v=hs.map(h=>agg(H[h]).net),m=Math.max(1,...v.map(Math.abs));const bw=Math.min(50,(W-2*P)/hs.length*0.7),mid=HH/2;
+    g+='<line x1="'+P+'" y1="'+mid+'" x2="'+(W-P)+'" y2="'+mid+'" stroke="#2A333F"/>';
+    hs.forEach((h,i)=>{const x=P+i*(W-2*P)/hs.length+((W-2*P)/hs.length-bw)/2,hh=Math.abs(v[i])/m*(mid-22);const y=v[i]>=0?mid-hh:mid;
+      g+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(1,hh).toFixed(1)+'" rx="3" fill="'+(v[i]>=0?"#2BD27F":"#FF5D5D")+'"><title>'+h+":00 · "+money(v[i],1)+" · "+H[h].length+' op.</title></rect><text x="'+(x+bw/2).toFixed(1)+'" y="'+(HH-4)+'" text-anchor="middle" fill="#8B98A8" font-size="11">'+h+'h</text>'})}
+  $("stHour").innerHTML=g;
+  // por setup
+  const SU={};tr.forEach(t=>{const k=(t.setup||"sin setup").trim().toLowerCase();(SU[k]=SU[k]||[]).push(t)});
+  $("stSetup").innerHTML=Object.keys(SU).sort((a,b)=>agg(SU[b]).net-agg(SU[a]).net).map(k=>{const s=agg(SU[k]);return '<div class="li"><div class="t">'+esc(k)+' <span class="small">'+s.n+' op. · '+Math.round(s.win*100)+' %</span></div><b class="num '+cls(s.net)+'">'+money(s.net,1)+'</b></div>'}).join("")||'<p class="small">Pon un nombre de setup al apuntar y aquí verás cuál te da dinero.</p>';
+  // consejos
+  $("stTips").innerHTML=tips(tr,A).map(t=>'<div class="tip '+t[0]+'">'+t[1]+'</div>').join("");
+}
+function tips(tr,A){const T=[];const MIN=15;
+  if(tr.length<MIN){T.push(["","Con "+tr.length+" operaciones aún no hay datos para sacar conclusiones. A partir de "+MIN+" te digo qué patrones veo. Mientras, sigue las reglas de la cuenta."]);return T}
+  if(A.exp<0)T.push(["r","Ahora mismo pierdes "+money(-A.exp)+" de media por operación. Antes de subir tamaño, busca en «Por setup» qué es lo que te está costando."]);
+  if(A.avgL&&A.avgW/A.avgL<1&&A.win<0.6)T.push(["w","Tu pérdida media ("+money(A.avgL)+") es mayor que tu ganancia media ("+money(A.avgW)+") y aciertas menos del 60 %. Revisa si cortas las ganadoras antes de tiempo o mueves el stop."]);
+  const al=tr.filter(t=>t.afterLoss),nl=tr.filter(t=>!t.afterLoss);if(al.length>=6){const a1=agg(al),a2=agg(nl);if(a1.exp<a2.exp-20)T.push(["w","Después de una pérdida rindes peor: "+money(a1.exp,1)+" por operación frente a "+money(a2.exp,1)+". Tras perder, espera 10 minutos o baja a la mitad de contratos."])}
+  const moods={};tr.forEach(t=>{if(t.mood)(moods[t.mood]=moods[t.mood]||[]).push(t)});Object.keys(moods).forEach(m=>{const s=agg(moods[m]);if(moods[m].length>=5&&s.exp<0&&m!=="tranquilo")T.push(["r","Cuando operas «"+m+"» pierdes "+money(-s.exp)+" por operación ("+moods[m].length+" op.). Si te notas así, no entres."])});
+  const plan=tr.filter(t=>t.plan),noplan=tr.filter(t=>!t.plan);if(plan.length>=5&&noplan.length>=5){const p1=agg(plan),p2=agg(noplan);T.push([p1.exp>p2.exp?"g":"w","Dentro de tu plan: "+money(p1.exp,1)+" por operación. Fuera de plan: "+money(p2.exp,1)+"."+(p1.exp>p2.exp?" El plan funciona: síguelo.":"")])}
+  const H={};tr.forEach(t=>{if(t.time&&!isNaN(parseInt(t.time,10))){const h=parseInt(t.time,10);(H[h]=H[h]||[]).push(t)}});const bad=Object.keys(H).filter(h=>H[h].length>=5&&agg(H[h]).net<0);if(bad.length)T.push(["w","Pierdes dinero entre las "+bad.map(h=>h+":00").join(", ")+". Prueba a no operar en esa franja durante dos semanas y compara."]);
+  const good=Object.keys(H).filter(h=>H[h].length>=5&&agg(H[h]).exp>0).sort((a,b)=>agg(H[b]).exp-agg(H[a]).exp)[0];if(good)T.push(["g","Tu mejor franja es la de las "+good+":00 ("+money(agg(H[good]).exp,1)+" por operación)."]);
+  const byDay={};tr.forEach(t=>{const k=t.acc+t.d;(byDay[k]=byDay[k]||[]).push(t)});const many=Object.values(byDay).filter(x=>x.length>=6),few=Object.values(byDay).filter(x=>x.length<6);
+  if(many.length>=3&&few.length>=3){const m1=agg(many.flat()).net/many.length,m2=agg(few.flat()).net/few.length;if(m1<m2)T.push(["w","Los días de 6 o más operaciones te salen peor ("+money(m1,1)+" por día) que los de menos ("+money(m2,1)+"). Ponte un máximo de operaciones al día."])}
+  if(!T.length)T.push(["g","No veo nada raro en tus números. Sigue igual y no subas tamaño hasta tener 50 operaciones con la misma regla."]);
+  return T}
+
+/* ============ cuentas y reglas ============ */
+const RF=[["start","Saldo inicial ($)"],["dd","Pérdida máxima (EOD, $)"],["target","Objetivo de la prueba ($)"],["cons","Consistencia prueba (0,4 = 40 %; 0 = no)"],["dll","Límite diario de la firma ($; 0 = no)"],["payCap","Máximo por retiro ($)"],["payMin","Mínimo por retiro ($)"],["my.loss","Mi tope de pérdida diario ($)"],["my.cap","Mi tope de ganancia diario ($; 0 = no)"],["my.risk","Mi riesgo por operación ($)"],["my.consec","Pérdidas seguidas para parar"],["my.give","Máximo a devolver del día (0,5 = 50 %)"]];
+const gv=(a,k)=>k.split(".").reduce((o,x)=>o&&o[x],a);
+function sv(a,k,v){const p=k.split(".");if(p.length===2)a[p[0]][p[1]]=v;else a[k]=v}
+function rCuentas(){const L=$("accList");L.innerHTML="";
+  if(!D.accounts.length)L.innerHTML='<p class="small">Todavía no tienes cuentas.</p>';
+  D.accounts.slice().reverse().forEach(a=>{const c=calc(a);const r=document.createElement("div");r.className="li";
+    r.innerHTML='<div><div class="t"><b>'+esc(a.name)+'</b> '+(a.id===D.active?'<span class="tag acc">activa</span>':"")+' <span class="tag '+(a.status==="activa"?"":a.status==="aprobada"?"up":"down")+'">'+esc(a.phase+" · "+a.status)+'</span></div><div class="small num">'+money(c.bal)+" · "+money(c.profit,1)+" · "+c.dates.length+' días</div></div>';
+    const b=document.createElement("button");b.textContent="Usar";b.disabled=a.id===D.active;b.addEventListener("click",()=>{D.active=a.id;save();render()});r.append(b);L.append(r)});
+  const a=acc();$("rulesCard").hidden=!a;if(!a)return;
+  $("rulesForm").innerHTML=RF.map(([k,l])=>'<label>'+l+'<input data-k="'+k+'" type="number" step="any" inputmode="decimal" value="'+esc(gv(a,k))+'"></label>').join("")+'<label>Nombre<input data-k="name" value="'+esc(a.name)+'"></label>';
+  $("toFunded").hidden=a.phase!=="prueba"||a.status!=="activa";$("failAcc").hidden=a.status!=="activa";$("payBox").hidden=a.phase!=="financiada";
+  $("wDate").value=$("wDate").value||today();
+  $("wList").innerHTML=(a.payouts||[]).slice().reverse().map((p,i)=>'<div class="li"><span>'+fdate(p.date)+'</span><b class="num">'+money(p.amount)+' <span class="small">(~'+money(p.amount*0.9)+')</span></b></div>').join("")||'<p class="small">Sin retiros todavía.</p>';
+}
+function rAjustes(){$("blkList").innerHTML=(D.blocked||[]).map((b,i)=>'<div class="li"><div class="t">'+esc(b.why||"Sin operar")+' <span class="small">'+fdate(b.from)+" – "+fdate(b.to)+'</span></div><button class="x" data-bi="'+i+'">✕</button></div>').join("")||'<p class="small">Ninguno.</p>';
+  $("rsMax").value=D.resetsMax;$("rsTxt").textContent="Este mes llevas "+resetsThisMonth()+" cuenta(s) suspendida(s). Tu máximo: "+D.resetsMax+"."}
+
+/* ============ eventos ============ */
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.go)));
+$("tTime").value=new Date().toTimeString().slice(0,5);
+$("tAdd").addEventListener("click",()=>{const a=acc();if(!a)return;const p=parseFloat(String($("tPnl").value).replace(",","."));if(!isFinite(p)){$("tPnl").focus();return}
+  const t=today();const day=a.days[t]=a.days[t]||{trades:[]};
+  day.trades.push({id:uid(),pnl:Math.round(p*100)/100,qty:+$("tQty").value||0,time:$("tTime").value||new Date().toTimeString().slice(0,5),side:$("tSide").value,setup:$("tSetup").value.trim().slice(0,40),mood:$("tMood").value,note:$("tNote").value.trim().slice(0,200),plan:$("tPlan").checked});
+  $("tPnl").value="";$("tNote").value="";$("tPlan").checked=false;$("tTime").value=new Date().toTimeString().slice(0,5);save();render();
+  const s=dayState(a,day),v=verdict(a,calc(a),s);if(v.lvl==="stop"&&navigator.vibrate)navigator.vibrate([200,100,200])});
+$("dNote").addEventListener("input",()=>{const a=acc();if(!a)return;const t=today();const day=a.days[t]=a.days[t]||{trades:[]};day.note=$("dNote").value.slice(0,500);save()});
+$("pDate").value=today();
+$("pAdd").addEventListener("click",()=>{const a=acc();if(!a)return;const d=$("pDate").value,p=parseFloat($("pPnl").value);if(!d||!isFinite(p))return;const day=a.days[d]=a.days[d]||{trades:[]};day.trades.push({id:uid(),pnl:p,time:"",side:"L",setup:"resumen del día",plan:true});$("pPnl").value="";save();render()});
+document.querySelectorAll("#stScope button").forEach(b=>b.addEventListener("click",()=>{STSCOPE=b.dataset.s;render()}));
+$("nAdd").addEventListener("click",()=>{const a=mkAcc($("nTpl").value,$("nName").value.trim());D.accounts.push(a);D.active=a.id;$("nName").value="";save();go("hoy")});
+$("rSave").addEventListener("click",()=>{const a=acc();if(!a)return;document.querySelectorAll("#rulesForm input").forEach(i=>{const k=i.dataset.k;if(k==="name"){a.name=i.value.trim()||a.name;return}const v=parseFloat(String(i.value).replace(",","."));if(isFinite(v)&&v>=0)sv(a,k,v)});save();render()});
+$("toFunded").addEventListener("click",()=>{const a=acc();if(!a)return;const b=$("toFunded");if(b.dataset.a!=="1"){b.dataset.a="1";b.textContent="¿Seguro? Pulsa otra vez";return}b.dataset.a="";b.textContent="Aprobada → crear la financiada";
+  a.status="aprobada";a.endDate=today();const tpl=a.plan.startsWith("Zero")?"zero50":"adv50f";const f=mkAcc(tpl,a.name.replace(/prueba/i,"").trim()+" · financiada");if(tpl==="zero50"){f.phase="financiada";f.target=0;f.my.cap=0;f.my.give=0.5;f.my.loss=700}
+  D.accounts.push(f);D.active=f.id;save();go("hoy")});
+$("failAcc").addEventListener("click",()=>{const a=acc();if(!a)return;const b=$("failAcc");if(b.dataset.a!=="1"){b.dataset.a="1";b.textContent="¿Seguro? Pulsa otra vez";return}b.dataset.a="";b.textContent="Suspendida";a.status="suspendida";a.endDate=today();save();render();
+  const n=resetsThisMonth();alertBox(n>D.resetsMax?"Llevas "+n+" suspensos este mes y tu máximo es "+D.resetsMax+". Tu regla: una semana sin operar y repasar el diario antes de comprar otra.":"Apuntado. Antes de comprar otra, repasa en Números qué falló.")});
+function alertBox(t){const s=$("hStatus");go("hoy");s.className="status warn";s.innerHTML=esc(t)}
+$("wAdd").addEventListener("click",()=>{const a=acc();if(!a)return;const v=parseFloat($("wAmt").value);if(!isFinite(v)||v<=0)return;a.payouts=a.payouts||[];a.payouts.push({date:$("wDate").value||today(),amount:v});$("wAmt").value="";save();render()});
+$("bAdd").addEventListener("click",()=>{const f=$("bFrom").value,t=$("bTo").value;if(!f||!t||t<f)return;D.blocked.push({from:f,to:t,why:$("bWhy").value.trim().slice(0,60)||"Sin operar"});$("bWhy").value="";save();render()});
+$("blkList").addEventListener("click",e=>{const i=e.target.dataset&&e.target.dataset.bi;if(i==null)return;D.blocked.splice(+i,1);save();render()});
+$("rsSave").addEventListener("click",()=>{const v=parseInt($("rsMax").value,10);if(v>=0){D.resetsMax=v;save();render()}});
+$("bkOut").addEventListener("click",async()=>{await seal();const raw=localStorage.getItem(LS)||"";const code="FONDEO1."+btoa(raw);$("bkTxt").value=code;try{await navigator.clipboard.writeText(code);$("bkMsg").textContent="Copiado. Sigue cifrado: sin tu clave no sirve de nada."}catch(e){$("bkTxt").select();$("bkMsg").textContent="Cópialo del recuadro."}});
+$("bkIn").addEventListener("click",async()=>{const s=$("bkTxt").value.trim();const m=$("bkMsg");try{if(!s.startsWith("FONDEO1."))throw 0;const blob=JSON.parse(atob(s.slice(8)));const pw=prompt("Clave de ese código");if(pw===null)return;const o=await openBlob(blob,pw);KEY=o.k;SALT=o.salt;D=o.data;await seal();m.textContent="Restaurado.";render()}catch(e){m.textContent="Código o clave no válidos."}});
+$("cpGo").addEventListener("click",async()=>{const a=$("cp1").value,b=$("cp2").value,m=$("cpMsg");if(a.length<6){m.textContent="Mínimo 6 caracteres.";return}if(a!==b){m.textContent="No coinciden.";return}SALT=crypto.getRandomValues(new Uint8Array(16));KEY=await derive(a,SALT,IT);await seal();$("cp1").value=$("cp2").value="";m.textContent="Clave cambiada."});
+
+/* ============ bloqueo ============ */
+let creating=false,idle=null;
+function prepLock(){const b=lsGet();creating=!b;$("pw2").hidden=!creating;$("pwGo").textContent=creating?"Crear diario":"Abrir";
+  $("lockMsg").textContent=creating?"Elige una clave. Todo lo que apuntes se guarda cifrado en este móvil.":"Tu diario está cifrado en este móvil. Escribe tu clave.";$("pwErr").textContent=""}
+async function unlock(){const pw=$("pw").value,err=$("pwErr");if(!pw)return;$("pwGo").disabled=true;err.textContent="";
+  try{if(creating){if(pw.length<6)throw new Error("Mínimo 6 caracteres.");if(pw!==$("pw2").value)throw new Error("Las claves no coinciden.");SALT=crypto.getRandomValues(new Uint8Array(16));KEY=await derive(pw,SALT,IT);D=newData();await seal()}
+    else{const o=await openBlob(lsGet(),pw);KEY=o.k;SALT=o.salt;D=o.data}
+    $("pw").value=$("pw2").value="";$("lock").hidden=true;$("app").hidden=false;$("nav").hidden=false;
+    $("setups").innerHTML=[...new Set(D.accounts.flatMap(a=>Object.values(a.days).flatMap(d=>(d.trades||[]).map(t=>t.setup)).filter(Boolean)))].map(s=>'<option value="'+esc(s)+'">').join("");
+    go("hoy");bump()}
+  catch(e){err.textContent=e&&e.message&&!/operation|decrypt/i.test(e.message)?e.message:"Clave incorrecta."}
+  $("pwGo").disabled=false}
+async function lock(){clearTimeout(idle);if(KEY&&D){clearTimeout(saveT);try{await seal()}catch(e){}}KEY=null;D=null;
+  ["hList","dList","stK","stTips","stSetup","accList","rulesForm","wList","blkList","eq","stHour"].forEach(i=>{$(i).innerHTML=""});$("dNote").value="";$("bkTxt").value="";
+  $("app").hidden=true;$("nav").hidden=true;$("lock").hidden=false;prepLock()}
+function bump(){clearTimeout(idle);if(KEY)idle=setTimeout(lock,5*60*1000)}
+["click","keydown","touchstart"].forEach(e=>document.addEventListener(e,bump,{passive:true}));
+/* al irte al bróker no se bloquea al instante: solo si vuelves tras más de 2 minutos fuera */
+let hiddenAt=0;document.addEventListener("visibilitychange",()=>{if(document.hidden){hiddenAt=Date.now();if(KEY){clearTimeout(saveT);seal().catch(()=>{})}}else if(KEY&&hiddenAt&&Date.now()-hiddenAt>120000)lock()});
+$("pwGo").addEventListener("click",unlock);[$("pw"),$("pw2")].forEach(i=>i.addEventListener("keydown",e=>{if(e.key==="Enter")unlock()}));
+$("lockBtn").addEventListener("click",lock);
+prepLock();
+if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>
