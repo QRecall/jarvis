@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
 :root{
-  --bg:#0E1116;--card:#161B22;--card2:#1C232D;--line:#2A333F;--ink:#E6EDF3;--ink2:#8B98A8;--ink3:#5F6B7A;
+  --bg:#0E1116;--card:#161B22;--card2:#1C232D;--line:#2A333F;--ink:#E6EDF3;--ink2:#8B98A8;--ink3:#7D8896;
   --up:#2BD27F;--up-soft:#123526;--down:#FF5D5D;--down-soft:#3A1717;--warn:#F5B83D;--warn-soft:#3A2D10;--acc:#5AA9FF;--acc-soft:#14283F;
   --disp:"Space Grotesk",system-ui,sans-serif;--body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
   color-scheme:dark;padding-top:env(safe-area-inset-top,0px)
@@ -64,7 +64,7 @@ button:disabled{opacity:.45}
 .li{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--card2);border-radius:10px;padding:9px 11px;min-width:0}
 .li>div{min-width:0}
 .li .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.x{background:transparent;border:0;color:var(--ink3);padding:4px 8px}
+.x{background:transparent;border:0;color:var(--ink2);min-width:44px;min-height:44px;padding:6px 10px}
 nav{position:fixed;left:0;right:0;bottom:0;background:#0B0E12F2;border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));backdrop-filter:blur(8px);z-index:5}
 nav .in{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;max-width:640px;width:100%}
 nav button{background:transparent;border:0;padding:7px 2px;font-size:11.5px;color:var(--ink3);display:grid;justify-items:center;gap:2px;font-weight:500}
@@ -84,6 +84,17 @@ nav button.on{color:var(--acc)}
 details summary{cursor:pointer;color:var(--ink2);font-size:14px}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
 .cal div{aspect-ratio:1;border-radius:6px;background:var(--card2);font-size:11px;display:grid;place-items:center;font-family:var(--mono)}
+#qbar{position:fixed;left:0;right:0;bottom:calc(60px + env(safe-area-inset-bottom,0px));background:#0B0E12F2;border-top:1px solid var(--line);padding:8px 16px;z-index:5;backdrop-filter:blur(8px)}
+#qbar .in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:1fr auto auto;gap:8px}
+#qbar input{font-family:var(--mono);font-size:18px}
+#qbar button{padding:11px 12px;white-space:nowrap}
+body.hoy{padding-bottom:calc(160px + env(safe-area-inset-bottom,0px))}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--acc)}
+#stopOv{position:fixed;inset:0;z-index:30;background:#2A0B0BF5;display:grid;place-items:center;padding:24px;text-align:center}
+#stopOv .b{max-width:380px;display:grid;gap:14px}
+#stopOv h2{font-size:44px;color:var(--down)}
+#stopOv p{font-size:17px}
+#saveErr{background:var(--down-soft);color:var(--down);border-radius:10px;padding:10px 12px;font-size:14px}
 @media (max-width:420px){.grid3{grid-template-columns:1fr 1fr}.grid3.k3{grid-template-columns:repeat(3,1fr)}.kpi b{font-size:16px}.k3 .kpi span{font-size:10.5px}}
 </style>
 </head>
@@ -116,7 +127,9 @@ details summary{cursor:pointer;color:var(--ink2);font-size:14px}
       <button class="pri" data-go="cuentas">Ir a Cuentas</button>
     </div>
     <div id="hoyBody">
-      <div id="hStatus" class="status ok"></div>
+      <div id="saveErr" hidden>No se ha podido guardar en este móvil (¿almacenamiento lleno o modo privado?). Haz una copia en Ajustes antes de cerrar.</div>
+      <div id="hStatus" class="status ok" role="status" aria-live="polite"></div>
+      <div id="bkTip" class="tip w" hidden></div>
       <div class="card">
         <div class="row sp"><h2>Sesión de hoy</h2><span class="tag" id="hDate"></span></div>
         <div class="grid3 k3">
@@ -135,9 +148,9 @@ details summary{cursor:pointer;color:var(--ink2);font-size:14px}
       </div>
 
       <div class="card">
-        <h3>Apuntar operación</h3>
+        <h3>Detalles de la siguiente operación <span class="small">(opcional)</span></h3>
+        <p class="small">El importe se apunta abajo con «+ Ganancia» o «− Pérdida». Lo que pongas aquí se guarda con esa operación.</p>
         <div class="grid2">
-          <label>Resultado ($)<input id="tPnl" type="number" inputmode="decimal" step="any" placeholder="+250 o -120"></label>
           <label>Contratos<input id="tQty" type="number" inputmode="numeric" min="1" step="1" placeholder="1"></label>
           <label>Hora<input id="tTime" type="time"></label>
           <label>Dirección<select id="tSide"><option value="L">Largo</option><option value="S">Corto</option></select></label>
@@ -145,8 +158,7 @@ details summary{cursor:pointer;color:var(--ink2);font-size:14px}
           <label>Cómo estabas<select id="tMood"><option value="">—</option><option value="tranquilo">Tranquilo</option><option value="ansioso">Ansioso</option><option value="revancha">Con ganas de recuperar</option><option value="euforico">Eufórico</option><option value="cansado">Cansado</option></select></label>
         </div>
         <label>Nota<input id="tNote" placeholder="qué viste, qué fallaste"></label>
-        <label class="row" style="display:flex;gap:8px;color:var(--ink)"><input id="tPlan" type="checkbox" style="width:auto"> Cumplí mi plan en esta operación</label>
-        <button class="pri" id="tAdd">Apuntar</button>
+        <label class="row" style="display:flex;gap:10px;color:var(--ink);font-size:15px"><input id="tPlan" type="checkbox" checked> Cumplí mi plan en esta operación</label>
         <datalist id="setups"></datalist>
       </div>
 
@@ -275,11 +287,13 @@ details summary{cursor:pointer;color:var(--ink2);font-size:14px}
       <p class="muted">Los datos viven solo en este móvil. Copia este código (sigue cifrado con tu clave) y guárdalo donde quieras. Para pasarlo a otro dispositivo, pégalo allí y abre con la misma clave.</p>
       <button id="bkOut">Copiar código cifrado</button>
       <textarea id="bkTxt" rows="3" placeholder="Pega aquí un código para restaurar"></textarea>
+      <input id="bkPw" type="password" autocomplete="off" placeholder="Clave de ese código">
       <button id="bkIn">Restaurar desde el código</button>
       <div class="small" id="bkMsg"></div>
     </div>
     <div class="card">
       <h2>Clave</h2>
+      <label>Clave actual<input id="cp0" type="password" autocomplete="current-password"></label>
       <label>Clave nueva<input id="cp1" type="password" autocomplete="new-password"></label>
       <label>Repite<input id="cp2" type="password" autocomplete="new-password"></label>
       <button id="cpGo">Cambiar clave</button>
@@ -290,6 +304,17 @@ details summary{cursor:pointer;color:var(--ink2);font-size:14px}
   </section>
 </main>
 
+<div id="qbar" hidden><div class="in">
+  <input id="qAmt" type="text" inputmode="decimal" autocomplete="off" placeholder="Importe $" aria-label="Importe de la operación en dólares">
+  <button class="good" id="qWin">+ Ganancia</button>
+  <button class="bad" id="qLoss">− Pérdida</button>
+</div></div>
+<div id="stopOv" hidden role="alertdialog" aria-labelledby="stopT"><div class="b">
+  <h2 id="stopT">PARA</h2>
+  <p id="stopR"></p>
+  <p class="muted">Cierra la plataforma. Mañana es otro día.</p>
+  <button class="pri" id="stopOk">Entendido</button>
+</div></div>
 <nav id="nav" hidden><div class="in">
   <button data-go="hoy" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>Hoy</button>
   <button data-go="diario"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Diario</button>
@@ -309,7 +334,7 @@ async function derive(pw,salt,it){const k=await crypto.subtle.importKey("raw",en
 let KEY=null,SALT=null,D=null;
 function lsGet(){try{return JSON.parse(localStorage.getItem(LS)||"null")}catch(e){return null}}
 function lsSet(v){try{localStorage.setItem(LS,JSON.stringify(v));return true}catch(e){return false}}
-async function seal(){if(!KEY||!D)return;const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},KEY,enc.encode(JSON.stringify(D)));lsSet({v:1,it:IT,salt:b64(SALT),iv:b64(iv),ct:b64(ct)})}
+async function seal(){if(!KEY||!D)return;const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},KEY,enc.encode(JSON.stringify(D)));const ok=lsSet({v:1,it:IT,salt:b64(SALT),iv:b64(iv),ct:b64(ct)});const e=$("saveErr");if(e)e.hidden=ok}
 async function openBlob(blob,pw){const salt=unb64(blob.salt),k=await derive(pw,salt,blob.it||IT);const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:unb64(blob.iv)},k,unb64(blob.ct));return {k,salt,data:JSON.parse(dec.decode(pt))}}
 let saveT=null;function save(){clearTimeout(saveT);saveT=setTimeout(()=>seal().catch(()=>{}),250)}
 
@@ -362,46 +387,53 @@ function calc(a){
   return {bal,floor,room:bal-floor,maxEOD,profit,best,consPct,effTarget,winDays,canPay,lastPay,series,tProfit,dates}
 }
 function dayState(a,day){
-  const tr=(day&&day.trades)||[];let run=0,peak=0,consec=0,maxConsec=0;
-  tr.forEach(t=>{run+=+t.pnl||0;if(run>peak)peak=run;if((+t.pnl||0)<0){consec++;maxConsec=Math.max(maxConsec,consec)}else consec=0});
-  return {pnl:run,peak,consec,n:tr.length}
+  const tr=(day&&day.trades)||[],my=a.my;let run=0,peak=0,minRun=0,consec=0,maxConsec=0,capHit=false,gaveBack=null,inStop=0;
+  tr.forEach(t=>{const p=+t.pnl||0;run+=p;if(run>peak)peak=run;if(run<minRun)minRun=run;
+    if(p<0){consec++;maxConsec=Math.max(maxConsec,consec)}else consec=0;
+    if(a.phase==="prueba"&&my.cap>0&&run>=my.cap)capHit=true;
+    if(a.phase!=="prueba"&&my.give>0&&peak>=300&&run<=peak*(1-my.give)&&!gaveBack)gaveBack={peak,at:run};
+    if(t.stop)inStop++});
+  return {pnl:run,peak,minRun,consec,maxConsec,capHit,gaveBack,inStop,n:tr.length}
 }
 function blockedToday(){const t=today();return (D.blocked||[]).find(b=>b.from<=t&&t<=b.to)||null}
 function resetsThisMonth(){const m=today().slice(0,7);return D.accounts.filter(a=>a.status==="suspendida"&&(a.endDate||"").slice(0,7)===m).length}
 
-/* ============ semáforo de la sesión ============ */
+/* ============ semáforo de la sesión ============
+   Los STOP son del DÍA: si se tocaron una vez, siguen aunque luego recuperes (evita la revancha). */
 function verdict(a,c,s){
-  const out={lvl:"ok",title:"Puedes operar",lines:[]};
-  const set=(l,t)=>{const r={ok:0,warn:1,stop:2};if(r[l]>r[out.lvl]){out.lvl=l;out.title=t}else if(r[l]===r[out.lvl]&&l!=="ok"&&out.title==="Puedes operar")out.title=t};
+  const out={lvl:"ok",title:"Puedes operar",lines:[]};const R={ok:0,warn:1,stop:2};
+  const set=(l,t)=>{if(R[l]>R[out.lvl]){out.lvl=l;out.title=t}};
   const b=blockedToday();
   if(b){set("stop","Hoy no se opera");out.lines.push("Estás en «"+b.why+"» ("+fdate(b.from)+" – "+fdate(b.to)+"). Medicina primero.")}
   if(a.status!=="activa"){set("stop","Cuenta cerrada");out.lines.push("Esta cuenta está marcada como "+a.status+". Elige otra en Cuentas.");return out}
-  const my=a.my;
-  // pérdida diaria
-  if(my.loss>0){if(s.pnl<=-my.loss){set("stop","Tope de pérdida alcanzado");out.lines.push("Vas "+money(s.pnl,1)+". Tu tope es −"+my.loss+" $. Se acabó el día.")}
+  const my=a.my,rs=resetsThisMonth();
+  if(rs>D.resetsMax){set("warn","Has pasado tu máximo de reinicios");out.lines.push("Este mes llevas "+rs+" cuentas suspendidas (máximo "+D.resetsMax+"). Tu regla: una semana sin operar y repasar el diario.")}
+  // pérdida diaria (pegajosa: cuenta lo peor del día)
+  if(my.loss>0){if(s.minRun<=-my.loss){set("stop","Tope de pérdida alcanzado hoy");out.lines.push("Hoy llegaste a "+money(s.minRun,1)+" (tope −"+my.loss+" $)"+(s.pnl>s.minRun?". Aunque ahora vayas "+money(s.pnl,1)+", hoy ya no se opera.":". Se acabó el día."))}
     else if(s.pnl<=-0.7*my.loss){set("warn","Cerca del tope de pérdida");out.lines.push("Te quedan "+money(my.loss+s.pnl)+" hasta tu tope diario. Baja tamaño o para.")}}
-  if(a.dll>0&&s.pnl<=-a.dll){set("stop","Límite diario de la prop firm");out.lines.push("Has tocado el límite diario de la cuenta ("+a.dll+" $).")}
-  // pérdidas seguidas
-  if(my.consec>0&&s.consec>=my.consec){set("stop",my.consec+" pérdidas seguidas");out.lines.push("Regla: con "+my.consec+" pérdidas seguidas se cierra el día.")}
+  if(a.dll>0&&s.minRun<=-a.dll){set("stop","Límite diario de la prop firm");out.lines.push("Has tocado el límite diario de la cuenta ("+a.dll+" $).")}
+  // pérdidas seguidas (pegajosa: la peor racha del día)
+  if(my.consec>0&&s.maxConsec>=my.consec){set("stop",my.consec+" pérdidas seguidas hoy");out.lines.push("Regla: con "+my.consec+" pérdidas seguidas se cierra el día"+(s.consec<my.consec?", aunque luego hayas ganado alguna.":"."))}
   else if(my.consec>1&&s.consec===my.consec-1){set("warn","Una pérdida más y paras");out.lines.push("Llevas "+s.consec+" pérdidas seguidas.")}
   // margen hasta la línea
   if(c.room<=Math.max(my.risk*2,250)){set(c.room<=my.risk?"stop":"warn","Muy cerca de la línea de pérdida máxima");out.lines.push("Solo "+money(c.room)+" hasta perder la cuenta. Riesgo mínimo o nada.")}
   if(a.phase==="prueba"){
-    if(my.cap>0&&s.pnl>=my.cap){set("stop","Tope de ganancia del día");out.lines.push("Vas "+money(s.pnl,1)+". En la prueba, por la consistencia, más ganancia hoy no te ayuda. Cierra.")}
+    if(s.capHit){set("stop","Tope de ganancia del día");out.lines.push("Hoy llegaste a tu tope de +"+my.cap+" $. En la prueba, por la consistencia, más ganancia hoy no te ayuda. Cierra.")}
     else if(my.cap>0&&s.pnl>=0.8*my.cap){set("warn","Cerca del tope de ganancia");out.lines.push("Te quedan "+money(my.cap-s.pnl)+" hasta tu tope de hoy.")}
     if(s.peak>=300&&s.pnl<=s.peak*0.5){set("warn","Estás devolviendo lo ganado");out.lines.push("Llegaste a "+money(s.peak,1)+" y vas "+money(s.pnl,1)+". En la prueba no uses el margen de la tarde.")}
   }else{
-    if(my.give>0&&s.peak>=300){const lim=s.peak*(1-my.give);if(s.pnl<=lim){set("stop","Has devuelto la mitad de lo ganado");out.lines.push("Máximo del día "+money(s.peak,1)+". Tu regla: cerrar como muy tarde en "+money(lim,1)+".")}
-      else if(s.pnl<=s.peak*(1-my.give*0.6)){set("warn","Ojo con devolver");out.lines.push("Si bajas de "+money(lim,1)+" se acaba el día.")}}
+    if(s.gaveBack){set("stop","Has devuelto lo ganado");out.lines.push("Llegaste a "+money(s.gaveBack.peak,1)+" y bajaste a "+money(s.gaveBack.at,1)+". Tu regla: no devolver más del "+Math.round(my.give*100)+" %. Se acabó el día.")}
+    else if(my.give>0&&s.peak>=300){const lim=s.peak*(1-my.give);if(s.pnl<=s.peak*(1-my.give*0.6)){set("warn","Ojo con devolver");out.lines.push("Si bajas de "+money(lim,1)+" se acaba el día.")}}
     if(c.floor<a.start){out.lines.push("Colchón aún sin hacer: la línea no se fija hasta cerrar un día en "+money(a.start+a.dd)+". Opera como en la prueba.")}
   }
+  if(s.inStop)out.lines.push("Hoy has apuntado "+s.inStop+" operación(es) después de un STOP.");
   if(out.lvl==="ok"&&!out.lines.length)out.lines.push("Riesgo por operación: hasta "+my.risk+" $. Tope de pérdida: −"+my.loss+" $"+(a.phase==="prueba"&&my.cap?" · tope de ganancia: +"+my.cap+" $":"")+".");
   return out
 }
 
 /* ============ pintar ============ */
 let VIEW="hoy",STSCOPE="acc";
-function go(v){VIEW=v;document.querySelectorAll("main>section").forEach(s=>s.hidden=s.id!=="v-"+v);document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.go===v));
+function go(v){VIEW=v;const qb=$("qbar");if(qb)qb.hidden=v!=="hoy"||!acc();document.body.classList.toggle("hoy",v==="hoy");document.querySelectorAll("main>section").forEach(s=>s.hidden=s.id!=="v-"+v);document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.go===v));
   $("hdrTitle").textContent={hoy:"Hoy",diario:"Diario",stats:"Números",cuentas:"Cuentas",ajustes:"Ajustes"}[v];render();window.scrollTo(0,0)}
 function render(){if(!D)return;const a=acc();$("hdrAcc").textContent=a?(a.name.toLowerCase().includes(a.phase)?a.name:a.name+" · "+a.phase):"Sin cuenta";
   if(VIEW==="hoy")rHoy();if(VIEW==="diario")rDiario();if(VIEW==="stats")rStats();if(VIEW==="cuentas")rCuentas();if(VIEW==="ajustes")rAjustes()}
@@ -414,13 +446,15 @@ function rHoy(){const a=acc();$("noAcc").hidden=!!a;$("hoyBody").hidden=!a;if(!a
   const L=a.my.loss||1;$("hLossTxt").textContent=money(Math.max(0,L+Math.min(0,s.pnl)))+" de "+L+" $";
   $("hLossBar").style.width=clamp(-Math.min(0,s.pnl)/L*100,0,100)+"%";
   const capOn=a.phase==="prueba"&&a.my.cap>0;$("hCapWrap").hidden=!capOn&&!(a.phase==="financiada"&&a.my.give>0);
-  if(capOn){$("hCapLbl").textContent="Hasta tu tope de ganancia";$("hCapTxt").textContent=money(Math.max(0,a.my.cap-s.pnl))+" de "+a.my.cap+" $";$("hCapBar").style.width=clamp(s.pnl/a.my.cap*100,0,100)+"%"}
+  if(capOn){$("hCapLbl").textContent="Hasta tu tope de ganancia";$("hCapTxt").textContent=money(clamp(a.my.cap-s.pnl,0,a.my.cap))+" de "+a.my.cap+" $";$("hCapBar").style.width=clamp(s.pnl/a.my.cap*100,0,100)+"%"}
   else if(a.my.give>0){const lim=s.peak*(1-a.my.give);$("hCapLbl").textContent="Suelo de hoy (no devolver más del "+Math.round(a.my.give*100)+" %)";$("hCapTxt").textContent=s.peak>=300?money(lim,1):"desde +300 $";$("hCapBar").style.width=s.peak>0?clamp(s.pnl/s.peak*100,0,100)+"%":"0%"}
+  const hasData=D.accounts.some(x=>Object.keys(x.days).length),lb=D.lastBackup;const old=!lb||((Date.now()-new Date(lb+"T00:00:00"))/864e5>7);
+  const bt=$("bkTip");bt.hidden=!(hasData&&old);if(!bt.hidden)bt.textContent=(lb?"Tu última copia es del "+fdate(lb)+".":"Aún no has hecho ninguna copia.")+" Los datos solo están en este móvil: haz una en Ajustes → Copia de seguridad.";
   const v=verdict(a,c,s);const st=$("hStatus");st.className="status "+v.lvl;st.innerHTML=esc(v.title)+v.lines.map(l=>"<small>"+esc(l)+"</small>").join("");
   // lista
   const L2=$("hList");L2.innerHTML="";if(!day.trades.length)L2.innerHTML='<p class="small">Aún nada hoy.</p>';
   day.trades.forEach((tr,i)=>{const r=document.createElement("div");r.className="li";
-    r.innerHTML='<div><div class="t"><b class="num '+cls(tr.pnl)+'">'+money(tr.pnl,1)+'</b> · '+esc(tr.time||"")+" · "+(tr.side==="S"?"corto":"largo")+(tr.qty?" · "+tr.qty+" c.":"")+'</div><div class="small t">'+esc([tr.setup,tr.mood,tr.plan?"plan ✓":"fuera de plan",tr.note].filter(Boolean).join(" · "))+'</div></div>';
+    r.innerHTML='<div><div class="t"><b class="num '+cls(tr.pnl)+'">'+money(tr.pnl,1)+'</b> · '+esc(tr.time||"")+" · "+(tr.side==="S"?"corto":"largo")+(tr.qty?" · "+tr.qty+" c.":"")+'</div><div class="small t">'+esc([tr.setup,tr.mood,tr.plan===true?"plan ✓":tr.plan===false?"fuera de plan":"",tr.stop?"en STOP":"",tr.note].filter(Boolean).join(" · "))+'</div></div>';
     const x=document.createElement("button");x.className="x";x.textContent="✕";x.addEventListener("click",()=>{if(x.dataset.a!=="1"){x.dataset.a="1";x.textContent="¿borrar?";setTimeout(()=>{x.dataset.a="";x.textContent="✕"},2500);return}day.trades.splice(i,1);if(!day.trades.length&&!day.note)delete a.days[t];save();render()});
     r.append(x);L2.append(r)});
   if(document.activeElement!==$("dNote"))$("dNote").value=day.note||"";
@@ -459,7 +493,7 @@ function agg(tr){const w=tr.filter(t=>t.pnl>0),l=tr.filter(t=>t.pnl<0);const gw=
   return {n:tr.length,win:tr.length?w.length/tr.length:0,avgW:w.length?gw/w.length:0,avgL:l.length?gl/l.length:0,pf:gl?gw/gl:(gw?Infinity:0),exp:tr.length?(gw-gl)/tr.length:0,net:gw-gl}}
 function rStats(){document.querySelectorAll("#stScope button").forEach(b=>b.classList.toggle("on",b.dataset.s===STSCOPE));
   const tr=allTrades(STSCOPE),A=agg(tr);
-  const K=[["Operaciones",A.n],["% acierto",Math.round(A.win*100)+" %"],["Neto",money(A.net,1)],["Ganancia media",money(A.avgW)],["Pérdida media",money(-A.avgL)],["Factor beneficio",A.pf===Infinity?"∞":A.pf.toFixed(2)],["Por operación",money(A.exp,1)],["Ganancia/pérdida",A.avgL?(A.avgW/A.avgL).toFixed(2):"—"],["Días operados",new Set(tr.map(t=>t.acc+t.d)).size]];
+  const K=[["Operaciones",A.n],["% acierto",Math.round(A.win*100)+" %"],["Neto",money(A.net,1)],["Ganancia media",money(A.avgW)],["Pérdida media",money(-A.avgL)],["Factor beneficio",A.pf===Infinity?"∞":A.pf.toFixed(2)],["Por operación",money(A.exp,1)],["Ganancia/pérdida",A.avgL?(A.avgW/A.avgL).toFixed(2):"—"],["Días operados",new Set(tr.map(t=>t.acc+t.d)).size],["Apuntadas en STOP",tr.filter(t=>t.stop).length]];
   $("stK").innerHTML=K.map(([k,v])=>'<div class="kpi"><span>'+k+'</span><b>'+esc(v)+'</b></div>').join("");
   // por hora
   const H={};tr.forEach(t=>{if(!t.time||isNaN(parseInt(t.time,10)))return;const h=parseInt(t.time,10);(H[h]=H[h]||[]).push(t)});
@@ -482,7 +516,7 @@ function tips(tr,A){const T=[];const MIN=15;
   if(A.avgL&&A.avgW/A.avgL<1&&A.win<0.6)T.push(["w","Tu pérdida media ("+money(A.avgL)+") es mayor que tu ganancia media ("+money(A.avgW)+") y aciertas menos del 60 %. Revisa si cortas las ganadoras antes de tiempo o mueves el stop."]);
   const al=tr.filter(t=>t.afterLoss),nl=tr.filter(t=>!t.afterLoss);if(al.length>=6){const a1=agg(al),a2=agg(nl);if(a1.exp<a2.exp-20)T.push(["w","Después de una pérdida rindes peor: "+money(a1.exp,1)+" por operación frente a "+money(a2.exp,1)+". Tras perder, espera 10 minutos o baja a la mitad de contratos."])}
   const moods={};tr.forEach(t=>{if(t.mood)(moods[t.mood]=moods[t.mood]||[]).push(t)});Object.keys(moods).forEach(m=>{const s=agg(moods[m]);if(moods[m].length>=5&&s.exp<0&&m!=="tranquilo")T.push(["r","Cuando operas «"+m+"» pierdes "+money(-s.exp)+" por operación ("+moods[m].length+" op.). Si te notas así, no entres."])});
-  const plan=tr.filter(t=>t.plan),noplan=tr.filter(t=>!t.plan);if(plan.length>=5&&noplan.length>=5){const p1=agg(plan),p2=agg(noplan);T.push([p1.exp>p2.exp?"g":"w","Dentro de tu plan: "+money(p1.exp,1)+" por operación. Fuera de plan: "+money(p2.exp,1)+"."+(p1.exp>p2.exp?" El plan funciona: síguelo.":"")])}
+  const plan=tr.filter(t=>t.plan===true),noplan=tr.filter(t=>t.plan===false);if(plan.length>=5&&noplan.length>=5){const p1=agg(plan),p2=agg(noplan);T.push([p1.exp>p2.exp?"g":"w","Dentro de tu plan: "+money(p1.exp,1)+" por operación. Fuera de plan: "+money(p2.exp,1)+"."+(p1.exp>p2.exp?" El plan funciona: síguelo.":"")])}
   const H={};tr.forEach(t=>{if(t.time&&!isNaN(parseInt(t.time,10))){const h=parseInt(t.time,10);(H[h]=H[h]||[]).push(t)}});const bad=Object.keys(H).filter(h=>H[h].length>=5&&agg(H[h]).net<0);if(bad.length)T.push(["w","Pierdes dinero entre las "+bad.map(h=>h+":00").join(", ")+". Prueba a no operar en esa franja durante dos semanas y compara."]);
   const good=Object.keys(H).filter(h=>H[h].length>=5&&agg(H[h]).exp>0).sort((a,b)=>agg(H[b]).exp-agg(H[a]).exp)[0];if(good)T.push(["g","Tu mejor franja es la de las "+good+":00 ("+money(agg(H[good]).exp,1)+" por operación)."]);
   const byDay={};tr.forEach(t=>{const k=t.acc+t.d;(byDay[k]=byDay[k]||[]).push(t)});const many=Object.values(byDay).filter(x=>x.length>=6),few=Object.values(byDay).filter(x=>x.length<6);
@@ -491,7 +525,7 @@ function tips(tr,A){const T=[];const MIN=15;
   return T}
 
 /* ============ cuentas y reglas ============ */
-const RF=[["start","Saldo inicial ($)"],["dd","Pérdida máxima (EOD, $)"],["target","Objetivo de la prueba ($)"],["cons","Consistencia prueba (0,4 = 40 %; 0 = no)"],["dll","Límite diario de la firma ($; 0 = no)"],["payCap","Máximo por retiro ($)"],["payMin","Mínimo por retiro ($)"],["my.loss","Mi tope de pérdida diario ($)"],["my.cap","Mi tope de ganancia diario ($; 0 = no)"],["my.risk","Mi riesgo por operación ($)"],["my.consec","Pérdidas seguidas para parar"],["my.give","Máximo a devolver del día (0,5 = 50 %)"]];
+const RF=[["start","Saldo inicial ($)"],["dd","Pérdida máxima a cierre de día ($)"],["target","Objetivo de la prueba ($)"],["cons","Consistencia en la prueba (%; 0 = no tiene)",100],["dll","Límite diario de la firma ($; 0 = no)"],["payCap","Máximo por retiro ($)"],["payMin","Mínimo por retiro ($)"],["my.loss","Mi tope de pérdida diario ($)"],["my.cap","Mi tope de ganancia diario ($; 0 = no)"],["my.risk","Mi riesgo por operación ($)"],["my.consec","Pérdidas seguidas para parar"],["my.give","Máximo a devolver de lo ganado en el día (%)",100]];
 const gv=(a,k)=>k.split(".").reduce((o,x)=>o&&o[x],a);
 function sv(a,k,v){const p=k.split(".");if(p.length===2)a[p[0]][p[1]]=v;else a[k]=v}
 function rCuentas(){const L=$("accList");L.innerHTML="";
@@ -500,7 +534,7 @@ function rCuentas(){const L=$("accList");L.innerHTML="";
     r.innerHTML='<div><div class="t"><b>'+esc(a.name)+'</b> '+(a.id===D.active?'<span class="tag acc">activa</span>':"")+' <span class="tag '+(a.status==="activa"?"":a.status==="aprobada"?"up":"down")+'">'+esc(a.phase+" · "+a.status)+'</span></div><div class="small num">'+money(c.bal)+" · "+money(c.profit,1)+" · "+c.dates.length+' días</div></div>';
     const b=document.createElement("button");b.textContent="Usar";b.disabled=a.id===D.active;b.addEventListener("click",()=>{D.active=a.id;save();render()});r.append(b);L.append(r)});
   const a=acc();$("rulesCard").hidden=!a;if(!a)return;
-  $("rulesForm").innerHTML=RF.map(([k,l])=>'<label>'+l+'<input data-k="'+k+'" type="number" step="any" inputmode="decimal" value="'+esc(gv(a,k))+'"></label>').join("")+'<label>Nombre<input data-k="name" value="'+esc(a.name)+'"></label>';
+  $("rulesForm").innerHTML=RF.map(([k,l,sc])=>'<label>'+l+'<input data-k="'+k+'" data-sc="'+(sc||1)+'" type="number" step="any" inputmode="decimal" value="'+esc(Math.round(gv(a,k)*(sc||1)*100)/100)+'"></label>').join("")+'<label>Nombre<input data-k="name" value="'+esc(a.name)+'"></label>';
   $("toFunded").hidden=a.phase!=="prueba"||a.status!=="activa";$("failAcc").hidden=a.status!=="activa";$("payBox").hidden=a.phase!=="financiada";
   $("wDate").value=$("wDate").value||today();
   $("wList").innerHTML=(a.payouts||[]).slice().reverse().map((p,i)=>'<div class="li"><span>'+fdate(p.date)+'</span><b class="num">'+money(p.amount)+' <span class="small">(~'+money(p.amount*0.9)+')</span></b></div>').join("")||'<p class="small">Sin retiros todavía.</p>';
@@ -511,17 +545,25 @@ function rAjustes(){$("blkList").innerHTML=(D.blocked||[]).map((b,i)=>'<div clas
 /* ============ eventos ============ */
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.go)));
 $("tTime").value=new Date().toTimeString().slice(0,5);
-$("tAdd").addEventListener("click",()=>{const a=acc();if(!a)return;const p=parseFloat(String($("tPnl").value).replace(",","."));if(!isFinite(p)){$("tPnl").focus();return}
+let audio=null;function beep(){try{audio=audio||new (window.AudioContext||window.webkitAudioContext)();[0,0.25].forEach(d=>{const o=audio.createOscillator(),g=audio.createGain();o.frequency.value=880;g.gain.value=0.18;o.connect(g);g.connect(audio.destination);o.start(audio.currentTime+d);o.stop(audio.currentTime+d+0.18)})}catch(e){}}
+function addTrade(sign){const a=acc();if(!a)return;const raw=String($("qAmt").value).replace(",",".").replace(/[^\d.]/g,"");const p=parseFloat(raw);
+  if(!isFinite(p)||p<=0){$("qAmt").focus();return}
   const t=today();const day=a.days[t]=a.days[t]||{trades:[]};
-  day.trades.push({id:uid(),pnl:Math.round(p*100)/100,qty:+$("tQty").value||0,time:$("tTime").value||new Date().toTimeString().slice(0,5),side:$("tSide").value,setup:$("tSetup").value.trim().slice(0,40),mood:$("tMood").value,note:$("tNote").value.trim().slice(0,200),plan:$("tPlan").checked});
-  $("tPnl").value="";$("tNote").value="";$("tPlan").checked=false;$("tTime").value=new Date().toTimeString().slice(0,5);save();render();
-  const s=dayState(a,day),v=verdict(a,calc(a),s);if(v.lvl==="stop"&&navigator.vibrate)navigator.vibrate([200,100,200])});
+  const before=verdict(a,calc(a),dayState(a,day));
+  day.trades.push({id:uid(),pnl:sign*Math.round(p*100)/100,qty:+$("tQty").value||0,time:$("tTime").value||new Date().toTimeString().slice(0,5),side:$("tSide").value,setup:$("tSetup").value.trim().slice(0,40),mood:$("tMood").value,note:$("tNote").value.trim().slice(0,200),plan:$("tPlan").checked,stop:before.lvl==="stop"||undefined});
+  $("qAmt").value="";$("tNote").value="";$("tMood").value="";$("tPlan").checked=true;$("tTime").value=new Date().toTimeString().slice(0,5);save();render();
+  const after=verdict(a,calc(a),dayState(a,day));
+  if(after.lvl==="stop"&&before.lvl!=="stop"){$("stopT").textContent="PARA";$("stopR").textContent=after.title+". "+(after.lines[0]||"");$("stopOv").hidden=false;beep();if(navigator.vibrate)navigator.vibrate([200,100,200])}}
+$("qWin").addEventListener("click",()=>addTrade(1));$("qLoss").addEventListener("click",()=>addTrade(-1));
+$("qAmt").addEventListener("keydown",e=>{if(e.key==="Enter")addTrade(String($("qAmt").value).trim().startsWith("-")?-1:1)});
+$("stopOk").addEventListener("click",()=>{$("stopOv").hidden=true});
 $("dNote").addEventListener("input",()=>{const a=acc();if(!a)return;const t=today();const day=a.days[t]=a.days[t]||{trades:[]};day.note=$("dNote").value.slice(0,500);save()});
 $("pDate").value=today();
-$("pAdd").addEventListener("click",()=>{const a=acc();if(!a)return;const d=$("pDate").value,p=parseFloat($("pPnl").value);if(!d||!isFinite(p))return;const day=a.days[d]=a.days[d]||{trades:[]};day.trades.push({id:uid(),pnl:p,time:"",side:"L",setup:"resumen del día",plan:true});$("pPnl").value="";save();render()});
+$("pAdd").addEventListener("click",()=>{const a=acc();if(!a)return;const d=$("pDate").value,p=parseFloat($("pPnl").value);if(!d||!isFinite(p))return;const day=a.days[d]=a.days[d]||{trades:[]};day.trades.push({id:uid(),pnl:p,time:"",side:"L",setup:"resumen del día",plan:null});$("pPnl").value="";save();render()});
 document.querySelectorAll("#stScope button").forEach(b=>b.addEventListener("click",()=>{STSCOPE=b.dataset.s;render()}));
 $("nAdd").addEventListener("click",()=>{const a=mkAcc($("nTpl").value,$("nName").value.trim());D.accounts.push(a);D.active=a.id;$("nName").value="";save();go("hoy")});
-$("rSave").addEventListener("click",()=>{const a=acc();if(!a)return;document.querySelectorAll("#rulesForm input").forEach(i=>{const k=i.dataset.k;if(k==="name"){a.name=i.value.trim()||a.name;return}const v=parseFloat(String(i.value).replace(",","."));if(isFinite(v)&&v>=0)sv(a,k,v)});save();render()});
+$("rSave").addEventListener("click",()=>{const a=acc();if(!a)return;const bad=[];document.querySelectorAll("#rulesForm input").forEach(i=>{const k=i.dataset.k;if(k==="name"){a.name=i.value.trim()||a.name;return}const sc=+i.dataset.sc||1;const v=parseFloat(String(i.value).replace(",","."));if(!isFinite(v)||v<0){bad.push(i);return}if(sc===100&&v>100){bad.push(i);return}if(k==="my.consec"&&v%1){bad.push(i);return}sv(a,k,v/sc)});
+  document.querySelectorAll("#rulesForm input").forEach(i=>i.style.outline=bad.includes(i)?"2px solid var(--down)":"");$("rSave").textContent=bad.length?"Revisa los campos en rojo":"Guardado ✓";setTimeout(()=>$("rSave").textContent="Guardar reglas",2000);save();render()});
 $("toFunded").addEventListener("click",()=>{const a=acc();if(!a)return;const b=$("toFunded");if(b.dataset.a!=="1"){b.dataset.a="1";b.textContent="¿Seguro? Pulsa otra vez";return}b.dataset.a="";b.textContent="Aprobada → crear la financiada";
   a.status="aprobada";a.endDate=today();const tpl=a.plan.startsWith("Zero")?"zero50":"adv50f";const f=mkAcc(tpl,a.name.replace(/prueba/i,"").trim()+" · financiada");if(tpl==="zero50"){f.phase="financiada";f.target=0;f.my.cap=0;f.my.give=0.5;f.my.loss=700}
   D.accounts.push(f);D.active=f.id;save();go("hoy")});
@@ -532,9 +574,12 @@ $("wAdd").addEventListener("click",()=>{const a=acc();if(!a)return;const v=parse
 $("bAdd").addEventListener("click",()=>{const f=$("bFrom").value,t=$("bTo").value;if(!f||!t||t<f)return;D.blocked.push({from:f,to:t,why:$("bWhy").value.trim().slice(0,60)||"Sin operar"});$("bWhy").value="";save();render()});
 $("blkList").addEventListener("click",e=>{const i=e.target.dataset&&e.target.dataset.bi;if(i==null)return;D.blocked.splice(+i,1);save();render()});
 $("rsSave").addEventListener("click",()=>{const v=parseInt($("rsMax").value,10);if(v>=0){D.resetsMax=v;save();render()}});
-$("bkOut").addEventListener("click",async()=>{await seal();const raw=localStorage.getItem(LS)||"";const code="FONDEO1."+btoa(raw);$("bkTxt").value=code;try{await navigator.clipboard.writeText(code);$("bkMsg").textContent="Copiado. Sigue cifrado: sin tu clave no sirve de nada."}catch(e){$("bkTxt").select();$("bkMsg").textContent="Cópialo del recuadro."}});
-$("bkIn").addEventListener("click",async()=>{const s=$("bkTxt").value.trim();const m=$("bkMsg");try{if(!s.startsWith("FONDEO1."))throw 0;const blob=JSON.parse(atob(s.slice(8)));const pw=prompt("Clave de ese código");if(pw===null)return;const o=await openBlob(blob,pw);KEY=o.k;SALT=o.salt;D=o.data;await seal();m.textContent="Restaurado.";render()}catch(e){m.textContent="Código o clave no válidos."}});
-$("cpGo").addEventListener("click",async()=>{const a=$("cp1").value,b=$("cp2").value,m=$("cpMsg");if(a.length<6){m.textContent="Mínimo 6 caracteres.";return}if(a!==b){m.textContent="No coinciden.";return}SALT=crypto.getRandomValues(new Uint8Array(16));KEY=await derive(a,SALT,IT);await seal();$("cp1").value=$("cp2").value="";m.textContent="Clave cambiada."});
+$("bkOut").addEventListener("click",async()=>{D.lastBackup=today();await seal();const raw=localStorage.getItem(LS)||"";const code="FONDEO1."+btoa(raw);$("bkTxt").value=code;try{await navigator.clipboard.writeText(code);$("bkMsg").textContent="Copiado. Sigue cifrado: sin tu clave no sirve de nada."}catch(e){$("bkTxt").select();$("bkMsg").textContent="Cópialo del recuadro."}});
+$("bkIn").addEventListener("click",async()=>{const s2=$("bkTxt").value.trim(),m=$("bkMsg"),b=$("bkIn");
+  if(b.dataset.a!=="1"){b.dataset.a="1";b.textContent="Esto sustituye TODO lo de este móvil. Pulsa otra vez";setTimeout(()=>{b.dataset.a="";b.textContent="Restaurar desde el código"},4000);return}
+  b.dataset.a="";b.textContent="Restaurar desde el código";
+  try{if(!s2.startsWith("FONDEO1."))throw 0;const blob=JSON.parse(atob(s2.slice(8)));const o=await openBlob(blob,$("bkPw").value);KEY=o.k;SALT=o.salt;D=o.data;await seal();$("bkPw").value="";m.textContent="Restaurado. A partir de ahora la clave es la de ese código.";render()}catch(e){m.textContent="Código o clave no válidos. No se ha cambiado nada."}});
+$("cpGo").addEventListener("click",async()=>{const a=$("cp1").value,b=$("cp2").value,m=$("cpMsg");try{await openBlob(lsGet(),$("cp0").value)}catch(e){m.textContent="La clave actual no es correcta.";return}if(a.length<6){m.textContent="Mínimo 6 caracteres.";return}if(a!==b){m.textContent="No coinciden.";return}SALT=crypto.getRandomValues(new Uint8Array(16));KEY=await derive(a,SALT,IT);await seal();$("cp0").value=$("cp1").value=$("cp2").value="";m.textContent="Clave cambiada."});
 
 /* ============ bloqueo ============ */
 let creating=false,idle=null;
@@ -549,8 +594,8 @@ async function unlock(){const pw=$("pw").value,err=$("pwErr");if(!pw)return;$("p
   catch(e){err.textContent=e&&e.message&&!/operation|decrypt/i.test(e.message)?e.message:"Clave incorrecta."}
   $("pwGo").disabled=false}
 async function lock(){clearTimeout(idle);if(KEY&&D){clearTimeout(saveT);try{await seal()}catch(e){}}KEY=null;D=null;
-  ["hList","dList","stK","stTips","stSetup","accList","rulesForm","wList","blkList","eq","stHour"].forEach(i=>{$(i).innerHTML=""});$("dNote").value="";$("bkTxt").value="";
-  $("app").hidden=true;$("nav").hidden=true;$("lock").hidden=false;prepLock()}
+  ["hList","dList","stK","stTips","stSetup","accList","rulesForm","wList","blkList","eq","stHour"].forEach(i=>{$(i).innerHTML=""});$("dNote").value="";$("bkTxt").value="";$("qAmt").value="";
+  $("app").hidden=true;$("nav").hidden=true;$("qbar").hidden=true;$("stopOv").hidden=true;$("lock").hidden=false;prepLock()}
 function bump(){clearTimeout(idle);if(KEY)idle=setTimeout(lock,5*60*1000)}
 ["click","keydown","touchstart"].forEach(e=>document.addEventListener(e,bump,{passive:true}));
 /* al irte al bróker no se bloquea al instante: solo si vuelves tras más de 2 minutos fuera */
